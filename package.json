@@ -1,8 +1,8 @@
 {
   "scripts": {
-    "start": "copyfiles -a static/**/*.* www && parcel examples/*.html --out-dir www",
-    "start_no_map": "copyfiles -a static/**/*.* www && parcel examples/*.html --out-dir www --no-source-maps",
-    "deploy": "copyfiles -a static/**/*.* dist/ && parcel build examples/*.html --no-source-maps"
+    "start": "copyfiles -a static/**/*.* www && parcel src/*.html --out-dir www",
+    "start_no_map": "copyfiles -a static/**/*.* www && parcel src/*.html --out-dir www --no-source-maps",
+    "deploy": "copyfiles -a static/**/*.* dist/ && parcel build src/*.html --no-source-maps"
   },
   "devDependencies": {
     "@types/pixi.js": "^4.8.3",
