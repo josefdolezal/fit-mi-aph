@@ -1,6 +1,8 @@
-import { KeyInputComponent, KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN } from '../../../ts/components/KeyInputComponent';
+import { KeyInputComponent, KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN, KEY_SPACE,  } from '../../../ts/components/KeyInputComponent';
 import { Attributes } from '../config/Attributes';
+import { Messages } from '../config/Messages';
 import SpaceImpactBaseComponent from './SpaceImpactBaseComponent';
+import { checkTime} from '../Utils';
 
 enum Direction {
     Up,
@@ -16,6 +18,8 @@ export class ShipController extends SpaceImpactBaseComponent {
 
     private sceneHeight: number;
     private sceneWidth: number;
+
+    private lastShot = 0;
 
     onInit() {
         super.onInit();
@@ -49,6 +53,17 @@ export class ShipController extends SpaceImpactBaseComponent {
         this.owner.getPixiObj().position.x = Math.max(0, Math.min(this.sceneWidth, this.owner.getPixiObj().position.x));
         this.owner.getPixiObj().position.y = Math.max(0, Math.min(this.sceneHeight, this.owner.getPixiObj().position.y));
     }
+
+    tryFire(absolute: number): boolean {
+        if (!checkTime(this.lastShot, absolute, this.model.shootingRate))
+            return false;
+        
+        this.lastShot = absolute;
+        this.factory.createMissile(this.owner, this.model);
+        this.sendMessage(Messages.MSG_MISSILE_SHOT);
+
+        return true;
+    }
 }
 
 /**
@@ -67,5 +82,8 @@ export class ShipArrowInputController extends ShipController {
             this.move(Direction.Up, delta);
         else if (cmpKey.isKeyPressed(KEY_DOWN))
             this.move(Direction.Down, delta);
+
+        if(cmpKey.isKeyPressed(KEY_SPACE))
+            this.tryFire(absolute)
     }
 }

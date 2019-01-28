@@ -7,6 +7,7 @@ export const KEY_DOWN = 40;
 export const KEY_X = 88;
 export const KEY_U = 85;
 export const KEY_I = 73;
+export const KEY_SPACE = 32;
 
 /**
  * Component for key-input handling

@@ -32,6 +32,8 @@ import { ShipArrowInputController } from "../component/ShipController";
 import { Attributes } from '../config/Attributes';
 import { Resources } from '../config/Resources';
 import { Tags } from '../config/Tags';
+import { Flags } from '../config/Flags'
+import { MissileComponent } from '../component/MissileComponent';
 
 export default class SpaceImpactFactory {
 
@@ -158,12 +160,30 @@ export default class SpaceImpactFactory {
 
         // ship
        builder
-            .relativePos(0.5, 0.75)
-            .anchor(0.5, 0.5)
+            .relativePos(0.1, 0.5)
+            .anchor(0, 0.5)
             .scale(SpaceImpactFactory.globalScale)
             .withComponent(new ShipArrowInputController())
             .build(new PIXICmp.Sprite(Tags.TAG_SHIP, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_SHIP)), scene.stage);
             // .build(new PIXICmp.Sprite(TAG_SHIP, this.createTexture(model.getSpriteInfo(TAG_SHIP))), scene.stage);
+    }
+
+    createMissile(ship: PIXICmp.ComponentObject, model: SpaceImpactModel) {
+        let dynamics = new Dynamics();
+        let rootObject = ship.getScene().stage;
+        let shipPixi = ship.getPixiObj();
+        let shipPosition = shipPixi.toGlobal(new PIXI.Point(0, 0));
+
+        dynamics.velocity = new Vec2(model.missileVelocity, 0);
+
+        new PIXIObjectBuilder(ship.getScene())
+            .scale(SpaceImpactFactory.globalScale)
+            .anchor(0, 0.5)
+            .globalPos(shipPosition.x + shipPixi.width, shipPosition.y)
+            .withFlag(Flags.FLAG_COLLIDABLE)
+            .withAttribute(Attributes.ATTR_DYNAMICS, dynamics)
+            .withComponent(new MissileComponent())
+            .build(new PIXICmp.Sprite(Tags.TAG_MISSILE, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_MISSILE)), rootObject);
     }
 
     // createProjectile(canon: PIXICmp.ComponentObject, model: ParatrooperModel) {

@@ -5,6 +5,8 @@ export class SpaceImpactModel {
     isGameOver = false;
     
     shipSpeed = 0.025;
+    missileVelocity = 35; 
+    shootingRate = 10;
 
     constructor() {
         this.reset();
