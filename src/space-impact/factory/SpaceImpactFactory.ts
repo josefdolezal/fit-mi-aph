@@ -150,7 +150,7 @@ export default class SpaceImpactFactory {
     createGround(owner: PIXICmp.ComponentObject) {
         let ground = new PIXICmp.Graphics(Tags.TAG_GROUND);
 
-        ground.beginFill(0xFFFFFF);
+        ground.beginFill(0x95BB49);
         ground.drawRect(0, 0, SpaceImpactFactory.screenWidth, SpaceImpactFactory.screenWidth);
         ground.endFill();
         owner.getPixiObj().addChild(ground);
@@ -177,9 +177,11 @@ export default class SpaceImpactFactory {
     createSimpleEnemy(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
         let scene = owner.getScene();
         let rootObject = scene.stage;
-        let sprite = new PIXICmp.Sprite(Tags.TAG_ENEMY, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_MISSILE));
         let screenHeight = scene.app.screen.height;
-
+        
+        let type = EnemyType.Simple;
+        let sprite = this.enemySprite(type);
+        
         // Random on-screen vertical position
         let position = Math.max(sprite.height / 2, Math.min(screenHeight - sprite.height / 2, Math.random() * screenHeight));
 
@@ -201,6 +203,24 @@ export default class SpaceImpactFactory {
                 return new EnemyFuzzyMovement(MovementDirection.Up);
                 break;
         }
+    }
+
+    protected enemySprite(enemyType: EnemyType): PIXICmp.Sprite {
+        let resource: string
+
+        switch (enemyType) {
+            case EnemyType.Simple:
+                resource = Resources.TEXTURE_TAG_SIMPLE_ENEMY;
+                break;
+            case EnemyType.Moving:
+                resource = Resources.TEXTURE_TAG_MOVING_ENEMY;
+                break;
+            case EnemyType.Shooting:
+                resource = Resources.TEXTURE_TAG_SHOOTING_ENEMY;
+                break;
+        }
+
+        return new PIXICmp.Sprite(Tags.TAG_ENEMY, PIXI.Texture.fromImage(resource));
     }
 
     // createParatrooper(owner: PIXICmp.ComponentObject, model: ParatrooperModel) {

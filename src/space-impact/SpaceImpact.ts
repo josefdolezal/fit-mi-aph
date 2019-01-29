@@ -42,6 +42,9 @@ class SpaceImpact {
             .reset()    // necessary for hot reload
             .add(Resources.TEXTURE_TAG_SHIP, 'static/ship.png')
             .add(Resources.TEXTURE_TAG_MISSILE, 'static/missile.png')
+            .add(Resources.TEXTURE_TAG_SIMPLE_ENEMY, 'static/simple_enemy.png')
+            .add(Resources.TEXTURE_TAG_MOVING_ENEMY, 'static/moving_enemy.png')
+            .add(Resources.TEXTURE_TAG_SHOOTING_ENEMY, 'static/shooting_enemy.png')
             // .add(TEXTURE_COPTER_LEFT, 'static/paratrooper/copter_left.png')
             // .add(TEXTURE_COPTER_RIGHT, 'static/paratrooper/copter_right.png')
             // .add(TEXTURE_PARATROOPER_PARACHUTE, 'static/paratrooper/paratrooper_parachute.png')
