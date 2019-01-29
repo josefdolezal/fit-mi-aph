@@ -190,18 +190,17 @@ export default class SpaceImpactFactory {
             .anchor(0, 0.5)
             .globalPos(scene.app.screen.width, position)
             .withFlag(Flags.FLAG_COLLIDABLE)
-            .withComponent(new EnemyFuzzyMovement(MovementDirection.Down))
+            .withComponent(this.enemyMovement(type))
             .build(sprite, rootObject);
     }
 
     protected enemyMovement(enemyType: EnemyType): EnemyMovement {
         switch (enemyType) {
-            case EnemyType.Simple, EnemyType.Shooting:
+            case EnemyType.Simple:
+            case EnemyType.Shooting:
                 return new EnemyLinearMovement();
-                break;
             case EnemyType.Moving:
                 return new EnemyFuzzyMovement(MovementDirection.Up);
-                break;
         }
     }
 
