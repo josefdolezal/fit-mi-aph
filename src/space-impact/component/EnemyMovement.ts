@@ -64,6 +64,8 @@ export class EnemyFuzzyMovement extends EnemyMovement {
             this.upperBound = position.y;
             this.bottomBound = position.y + this.model.movingEnemyRange;
         }
+
+        this.dynamics.velocity = this.velocityForMovement(this.movementDirection);
     }
 
     onUpdate(delta, absolute) {
