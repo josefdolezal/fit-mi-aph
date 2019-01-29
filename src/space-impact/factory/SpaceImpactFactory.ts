@@ -34,6 +34,8 @@ import { Resources } from '../config/Resources';
 import { Tags } from '../config/Tags';
 import { Flags } from '../config/Flags'
 import { MissileComponent } from '../component/MissileComponent';
+import { EnemyType } from '../model/EnemyType';
+import { EnemyMovement, EnemyLinearMovement, EnemyFuzzyMovement, MovementDirection } from '../component/EnemyMovement';
 
 export default class SpaceImpactFactory {
 
@@ -46,8 +48,6 @@ export default class SpaceImpactFactory {
     initializeGame(rootObject: PIXICmp.ComponentObject, model: SpaceImpactModel) {
         let scene = rootObject.getScene();
         let builder = new PIXIObjectBuilder(scene);
-
-
 
         // ============================================================================================================
         // special component that will wait for a death of a unit, executes a DeathAnimation
@@ -74,13 +74,9 @@ export default class SpaceImpactFactory {
         //     //.withComponent(new DebugComponent(document.getElementById("debugSect")))
             .build(rootObject);
 
-
-        // create ground
-        let ground = new PIXICmp.Graphics(Tags.TAG_GROUND);
-        ground.beginFill(0xFFFFFF);
-        ground.drawRect(0, 0, SpaceImpactFactory.screenWidth, SpaceImpactFactory.screenWidth);
-        ground.endFill();
-        rootObject.getPixiObj().addChild(ground);
+        this.createGround(rootObject);
+        this.createShip(rootObject, model);
+        this.createSimpleEnemy(rootObject, model);
 
         // create labels
         // score
@@ -117,29 +113,6 @@ export default class SpaceImpactFactory {
         //         text.text = lives;
         //     }))
         //     .build(lives, rootObject);
-
-        // // tower
-        // builder
-        //     .relativePos(0.5, 0.92)
-        //     .scale(ParatrooperFactory.globalScale)
-        //     .anchor(0.5, 1)
-        //     .build(new PIXICmp.Sprite(TAG_TOWER, PIXI.Texture.fromImage(TEXTURE_TOWER)), rootObject);
-
-        // // turret
-        // let turret = builder
-        //     .relativePos(0.5, 0.8)
-        //     .scale(ParatrooperFactory.globalScale)
-        //     .anchor(0.5, 1)
-        //     .build(new PIXICmp.Sprite(TAG_TURRET, PIXI.Texture.fromImage(TEXTURE_TURRET)), rootObject);
-
-        // // Ship
-        // builder
-        //     .relativePos(0.5, 0.75)
-        //     .anchor(0.5, 1)
-        //     // .withComponent(new CannonInputController())
-        //     .build(new PIXICmp.Sprite(Tags.TAG_SHIP, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_SHIP)), rootObject);
-
-        this.addIntro(scene, model);
     }
 
     addIntro(scene: Scene, model: SpaceImpactModel) {
@@ -159,13 +132,28 @@ export default class SpaceImpactFactory {
         // .build(new PIXICmp.Sprite(TAG_TITLE, this.createTexture(model.getSpriteInfo(TAG_TITLE))), scene.stage);
 
         // ship
-       builder
+       
+    }
+
+    createShip(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
+        let scene = owner.getScene();
+
+        new PIXIObjectBuilder(scene)
             .relativePos(0.1, 0.5)
             .anchor(0, 0.5)
             .scale(SpaceImpactFactory.globalScale)
+            .withFlag(Flags.FLAG_COLLIDABLE)
             .withComponent(new ShipArrowInputController())
             .build(new PIXICmp.Sprite(Tags.TAG_SHIP, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_SHIP)), scene.stage);
-            // .build(new PIXICmp.Sprite(TAG_SHIP, this.createTexture(model.getSpriteInfo(TAG_SHIP))), scene.stage);
+    }
+
+    createGround(owner: PIXICmp.ComponentObject) {
+        let ground = new PIXICmp.Graphics(Tags.TAG_GROUND);
+
+        ground.beginFill(0xFFFFFF);
+        ground.drawRect(0, 0, SpaceImpactFactory.screenWidth, SpaceImpactFactory.screenWidth);
+        ground.endFill();
+        owner.getPixiObj().addChild(ground);
     }
 
     createMissile(ship: PIXICmp.ComponentObject, model: SpaceImpactModel) {
@@ -186,28 +174,34 @@ export default class SpaceImpactFactory {
             .build(new PIXICmp.Sprite(Tags.TAG_MISSILE, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_MISSILE)), rootObject);
     }
 
-    // createProjectile(canon: PIXICmp.ComponentObject, model: ParatrooperModel) {
+    createSimpleEnemy(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
+        let scene = owner.getScene();
+        let rootObject = scene.stage;
+        let sprite = new PIXICmp.Sprite(Tags.TAG_ENEMY, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_MISSILE));
+        let screenHeight = scene.app.screen.height;
 
-    //     let rootObject = canon.getScene().stage;
-    //     let canonPixi = canon.getPixiObj();
-    //     let rotation = canonPixi.rotation;
-    //     let height = canonPixi.getBounds().height;
-    //     let canonGlobalPos = canonPixi.toGlobal(new PIXI.Point(0, 0));
-    //     let velocityX = model.projectileVelocity * Math.cos(rotation - Math.PI / 2);
-    //     let velocityY = model.projectileVelocity * Math.sin(rotation - Math.PI / 2);
-    //     let dynamics = new Dynamics();
-    //     dynamics.velocity = new Vec2(velocityX, velocityY);
-    //     dynamics.aceleration = new Vec2(0, model.gravity); // add gravity
+        // Random on-screen vertical position
+        let position = Math.max(sprite.height / 2, Math.min(screenHeight - sprite.height / 2, Math.random() * screenHeight));
 
-    //     // we need the projectile to be at the same location as the cannon with current rotation
-    //     new PIXIObjectBuilder(canon.getScene())
-    //         .globalPos(canonGlobalPos.x + height * Math.sin(rotation), canonGlobalPos.y - height * Math.cos(rotation))
-    //         .scale(ParatrooperFactory.globalScale)
-    //         .withFlag(FLAG_PROJECTILE)
-    //         .withAttribute(ATTR_DYNAMICS, dynamics)
-    //         .withComponent(new ProjectileComponent())
-    //         .build(new PIXICmp.Sprite(TAG_PROJECTILE, PIXI.Texture.fromImage(TEXTURE_PROJECTILE)), rootObject);
-    // }
+        new PIXIObjectBuilder(scene)
+            .scale(SpaceImpactFactory.globalScale)
+            .anchor(0, 0.5)
+            .globalPos(scene.app.screen.width, position)
+            .withFlag(Flags.FLAG_COLLIDABLE)
+            .withComponent(new EnemyFuzzyMovement(MovementDirection.Down))
+            .build(sprite, rootObject);
+    }
+
+    protected enemyMovement(enemyType: EnemyType): EnemyMovement {
+        switch (enemyType) {
+            case EnemyType.Simple, EnemyType.Shooting:
+                return new EnemyLinearMovement();
+                break;
+            case EnemyType.Moving:
+                return new EnemyFuzzyMovement(MovementDirection.Up);
+                break;
+        }
+    }
 
     // createParatrooper(owner: PIXICmp.ComponentObject, model: ParatrooperModel) {
     //     let dynamics = new Dynamics();
