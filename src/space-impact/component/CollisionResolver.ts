@@ -29,21 +29,34 @@ export class CollisionResolver extends SpaceImpactBaseComponent {
 
     // handles collision with all objects
     protected handleCollision(msg: Msg) {
-        let trigger = <CollisionInfo>msg.data;
+        let collision = <CollisionInfo>msg.data;
 
-        if(trigger.missile.getTag() == Tags.TAG_SHIP_MISSILE) {
-            if(trigger.collidable.getTag() == Tags.TAG_ENEMY_MISSILE) {
-                this.model.score += 5;
-                trigger.collidable.setState(States.STATE_DEAD);
-            } else if (trigger.collidable.getTag() == Tags.TAG_ENEMY) {
+        // Ship missile shot enemy
+        if(collision.trigger.getTag() == Tags.TAG_SHIP_MISSILE) {
+            collision.collidable.setState(States.STATE_DEAD);
 
+            if(collision.collidable.getTag() == Tags.TAG_ENEMY_MISSILE) {
+                // The enemy missile shot
+                collision.collidable.remove();
+            } else if (collision.collidable.getTag() == Tags.TAG_ENEMY) {
+                // Ship missile shot enemy
+                this.model.score += 20;
+                this.sendMessage(Messages.MSG_ENEMY_KILLED, collision.collidable);
             }
-        } else {
-            // enemy missile
+            
+            // Remove missile
+            collision.trigger.remove();
         }
+        // Enemy shot ship
+        else if(collision.trigger.hasFlag(Flags.FLAG_SHIP_MISSILE_COLLIDABLE)) {
+            if(collision.collidable.getTag() == Tags.TAG_SHIP) {
+                if(collision.trigger.getTag() == Tags.TAG_ENEMY_MISSILE) {
+                    collision.trigger.remove();
+                }
 
-        trigger.missile.remove();
-        trigger.collidable.remove();
+                this.sendMessage(Messages.MSG_SHIP_KILLED, collision.collidable);
+            }
+        }
 
         // if (trigger.unit.getTag() == TAG_COPTER) {
         //     // copter hit -> increase score and change state

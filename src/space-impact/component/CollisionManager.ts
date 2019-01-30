@@ -6,6 +6,7 @@ import { Messages } from '../config/Messages';
 import { Flags } from '../config/Flags';
 import { States } from '../config/States';
 import SpaceImpactBaseComponent from "./SpaceImpactBaseComponent";
+import { Tags } from '../config/Tags';
 
 /**
  * Entity that keeps info about a collision
@@ -14,11 +15,11 @@ export class CollisionInfo {
     // hit unit
     collidable: PIXICmp.ComponentObject;
     // projectile that hit given unit
-    missile: PIXICmp.ComponentObject;
+    trigger: PIXICmp.ComponentObject;
 
-    constructor(collidable: PIXICmp.ComponentObject, missile: PIXICmp.ComponentObject) {
+    constructor(collidable: PIXICmp.ComponentObject, trigger: PIXICmp.ComponentObject) {
         this.collidable = collidable;
-        this.missile = missile;
+        this.trigger = trigger;
     }
 }
 
@@ -28,6 +29,7 @@ export class CollisionInfo {
 export class CollisionManager extends SpaceImpactBaseComponent {
     shipMissileCollidables = new Array<PIXICmp.ComponentObject>();
     shipMissiles = new Array<PIXICmp.ComponentObject>();
+    ships = new Array<PIXICmp.ComponentObject>();
 
     onInit() {
         super.onInit();
@@ -38,6 +40,7 @@ export class CollisionManager extends SpaceImpactBaseComponent {
         if (msg.action == Messages.MSG_OBJECT_ADDED || msg.action == Messages.MSG_OBJECT_REMOVED) {
             this.shipMissiles = this.scene.findAllObjectsByFlag(Flags.FLAG_MISSILE)
             this.shipMissileCollidables = this.scene.findAllObjectsByFlag(Flags.FLAG_SHIP_MISSILE_COLLIDABLE);
+            this.ships = this.scene.findAllObjectsByTag(Tags.TAG_SHIP);
         }
     }
 
@@ -46,27 +49,37 @@ export class CollisionManager extends SpaceImpactBaseComponent {
 
         // O(m^n), we don't suppose there will be more than 50 units in total
         for (let missile of this.shipMissiles) {
-            if (missile.getState() != States.STATE_DEAD) {
-                for (let collidable of this.shipMissileCollidables) {
-                    if (collidable.getState() != States.STATE_DEAD) {
-                        let boundsA = missile.getPixiObj().getBounds();
-                        let boundsB = collidable.getPixiObj().getBounds();
+            for (let collidable of this.shipMissileCollidables) {
+                let boundsA = missile.getPixiObj().getBounds();
+                let boundsB = collidable.getPixiObj().getBounds();
 
-                        let intersectionX = this.testHorizIntersection(boundsA, boundsB);
-                        let intersectionY = this.testVertIntersection(boundsA, boundsB);
+                let intersectionX = this.testHorizIntersection(boundsA, boundsB);
+                let intersectionY = this.testVertIntersection(boundsA, boundsB);
 
-                        if (intersectionX > 0 && intersectionY > 0) {
-                            // we have a collision
-                            collides.push(new CollisionInfo(missile, collidable));
-                        }
-                    }
+                if (intersectionX > 0 && intersectionY > 0) {
+                    // we have a collision
+                    collides.push(new CollisionInfo(collidable, missile));
                 }
             }
         }
 
-        // send message for all colliding objects
+        for(let ship of this.ships) {
+            for(let collidable of this.shipMissileCollidables) {
+                let boundsA = ship.getPixiObj().getBounds();
+                let boundsB = collidable.getPixiObj().getBounds();
+
+                let intersectionX = this.testHorizIntersection(boundsA, boundsB);
+                let intersectionY = this.testVertIntersection(boundsA, boundsB);
+
+                if (intersectionX > 0 && intersectionY > 0) {
+                    // we have a collision
+                    collides.push(new CollisionInfo(ship, collidable));
+                }
+            }
+        }
+
+        // Send messages for all shot objects
         for (let collid of collides) {
-            console.log("shot");
             this.sendMessage(Messages.MSG_COLLISION, collid);
         }
     }
