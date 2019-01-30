@@ -60,7 +60,7 @@ export class ShipController extends SpaceImpactBaseComponent {
         
         this.lastShot = absolute;
         this.factory.createMissile(this.owner, this.model);
-        this.sendMessage(Messages.MSG_MISSILE_SHOT);
+        this.sendMessage(Messages.MSG_SHIP_MISSILE_SHOT);
 
         return true;
     }

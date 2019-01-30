@@ -1,13 +1,5 @@
 import { ATTR_DYNAMICS } from '../../../ts/engine/Constants';
-// import { CopterAnimator } from './CopterAnimator';
-// import { CopterComponent } from './CopterComponent';
-// import { ProjectileComponent } from './ProjectileComponent';
 // import { SoundComponent } from './SoundComponent';
-// import {
-//     ATTR_FACTORY, TAG_TOWER, TAG_TURRET, TAG_CANNON, TAG_GROUND, TEXTURE_TOWER, TEXTURE_TURRET, TEXTURE_CANNON,
-//     TAG_SCORE, TAG_GAMEOVER, TAG_LIVES, TAG_PROJECTILE, TEXTURE_PROJECTILE, TAG_PARATROOPER, MSG_UNIT_KILLED,
-//     TEXTURE_PARATROOPER, STATE_FALLING, TAG_COPTER, TEXTURE_COPTER_LEFT, ATTR_MODEL, DATA_JSON, FLAG_PROJECTILE, FLAG_COLLIDABLE
-// } from '../config/Constants';
 import { SpaceImpactModel } from '../SpaceImpactModel';
 import { PIXICmp } from '../../../ts/engine/PIXIObject';
 // import { CopterSpawner } from './CopterSpawner';
@@ -36,6 +28,7 @@ import { Flags } from '../config/Flags'
 import { MissileComponent } from '../component/MissileComponent';
 import { EnemyType } from '../model/EnemyType';
 import { EnemyMovement, EnemyLinearMovement, EnemyFuzzyMovement, MovementDirection } from '../component/EnemyMovement';
+import { EnemyShooting, EnemyNoShooting, EnemySimpleShooting } from '../component/EnemyShooting';
 
 export default class SpaceImpactFactory {
 
@@ -157,12 +150,10 @@ export default class SpaceImpactFactory {
     }
 
     createMissile(ship: PIXICmp.ComponentObject, model: SpaceImpactModel) {
-        let dynamics = new Dynamics();
+        let dynamics = new Dynamics(new Vec2(model.missileVelocity, 0));
         let rootObject = ship.getScene().stage;
         let shipPixi = ship.getPixiObj();
         let shipPosition = shipPixi.toGlobal(new PIXI.Point(0, 0));
-
-        dynamics.velocity = new Vec2(model.missileVelocity, 0);
 
         new PIXIObjectBuilder(ship.getScene())
             .scale(SpaceImpactFactory.globalScale)
@@ -171,7 +162,25 @@ export default class SpaceImpactFactory {
             .withFlag(Flags.FLAG_COLLIDABLE)
             .withAttribute(Attributes.ATTR_DYNAMICS, dynamics)
             .withComponent(new MissileComponent())
-            .build(new PIXICmp.Sprite(Tags.TAG_MISSILE, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_MISSILE)), rootObject);
+            .build(new PIXICmp.Sprite(Tags.TAG_SHIP_MISSILE, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_MISSILE)), rootObject);
+    }
+
+    createEnemyMissile(enemy: PIXICmp.ComponentObject, model: SpaceImpactModel) {
+        let dynamics = new Dynamics(new Vec2(-model.missileVelocity, 0));
+        let scene = enemy.getScene();
+        let rootObject = scene.stage;
+        let enemyPixi = enemy.getPixiObj();
+        let enemyPosition = enemyPixi.toGlobal(new PIXI.Point(0, 0));
+        let sprite = new PIXICmp.Sprite(Tags.TAG_ENEMY_MISSILE, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_MISSILE));
+        
+        new PIXIObjectBuilder(scene)
+            .scale(SpaceImpactFactory.globalScale)
+            .anchor(0, 0.5)
+            .globalPos(enemyPosition.x - (sprite.width * SpaceImpactFactory.globalScale), enemyPosition.y)
+            .withFlag(Flags.FLAG_COLLIDABLE)
+            .withAttribute(Attributes.ATTR_DYNAMICS, dynamics)
+            .withComponent(new MissileComponent())
+            .build(sprite, rootObject);
     }
 
     createSimpleEnemy(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
@@ -179,7 +188,7 @@ export default class SpaceImpactFactory {
         let rootObject = scene.stage;
         let screenHeight = scene.app.screen.height;
         
-        let type = EnemyType.Simple;
+        let type = EnemyType.Shooting;
         let sprite = this.enemySprite(type);
         
         // Random on-screen vertical position
@@ -191,6 +200,7 @@ export default class SpaceImpactFactory {
             .globalPos(scene.app.screen.width, position)
             .withFlag(Flags.FLAG_COLLIDABLE)
             .withComponent(this.enemyMovement(type))
+            .withComponent(this.enemyShooting(type))
             .build(sprite, rootObject);
     }
 
@@ -220,6 +230,14 @@ export default class SpaceImpactFactory {
         }
 
         return new PIXICmp.Sprite(Tags.TAG_ENEMY, PIXI.Texture.fromImage(resource));
+    }
+
+    protected enemyShooting(enemyType: EnemyType): EnemyShooting {
+        switch(enemyType) {
+            case EnemyType.Simple: return new EnemyNoShooting();
+            case EnemyType.Shooting:
+            case EnemyType.Moving: return new EnemySimpleShooting();
+        }
     }
 
     // createParatrooper(owner: PIXICmp.ComponentObject, model: ParatrooperModel) {

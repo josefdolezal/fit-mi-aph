@@ -4,10 +4,11 @@ export class SpaceImpactModel {
     lives = 100;
     isGameOver = false;
     
-    shipSpeed = 0.025;
+    shipSpeed = 0.02;
     missileVelocity = 35; 
-    enemySpeed = 18;
+    enemySpeed = 10;
     shootingRate = 10;
+    enemyShootingRate = 5;
     movingEnemyRange = 10;
 
     constructor() {
