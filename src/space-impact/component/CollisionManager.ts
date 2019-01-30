@@ -12,13 +12,13 @@ import SpaceImpactBaseComponent from "./SpaceImpactBaseComponent";
  */
 export class CollisionInfo {
     // hit unit
-    unit: PIXICmp.ComponentObject;
+    collidable: PIXICmp.ComponentObject;
     // projectile that hit given unit
-    projectile: PIXICmp.ComponentObject;
+    missile: PIXICmp.ComponentObject;
 
-    constructor(unit: PIXICmp.ComponentObject, projectile: PIXICmp.ComponentObject) {
-        this.unit = unit;
-        this.projectile = projectile;
+    constructor(collidable: PIXICmp.ComponentObject, missile: PIXICmp.ComponentObject) {
+        this.collidable = collidable;
+        this.missile = missile;
     }
 }
 

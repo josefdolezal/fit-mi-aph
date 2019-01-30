@@ -29,6 +29,7 @@ import { EnemyType } from '../model/EnemyType';
 import { EnemyMovement, EnemyLinearMovement, EnemyFuzzyMovement, MovementDirection } from '../component/EnemyMovement';
 import { EnemyShooting, EnemyNoShooting, EnemySimpleShooting } from '../component/EnemyShooting';
 import { CollisionManager } from '../component/CollisionManager';
+import { CollisionResolver } from '../component/CollisionResolver';
 
 export default class SpaceImpactFactory {
 
@@ -62,7 +63,7 @@ export default class SpaceImpactFactory {
         //     // .withComponent(new SoundComponent())
         //     // .withComponent(new CopterSpawner())
             .withComponent(new CollisionManager())
-        //     // .withComponent(new CollisionResolver())
+            .withComponent(new CollisionResolver())
         //     // .withComponent(deathChecker)
         //     //.withComponent(new DebugComponent(document.getElementById("debugSect")))
             .build(rootObject);
