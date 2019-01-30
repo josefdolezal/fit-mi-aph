@@ -13,11 +13,7 @@ export class GameManager extends SpaceImpactBaseComponent {
     onMessage(msg: Msg) {
         console.log("test");
         if(msg.action == Messages.MSG_SHIP_KILLED) {
-            console.log(this.model.lives);
             this.model.lives = Math.max(0, this.model.lives - 1);
-            console.log(this.model.lives);
-
-            console.log("t");
             
             if(this.model.lives == 0) {
                 this.gameOver();
@@ -30,9 +26,6 @@ export class GameManager extends SpaceImpactBaseComponent {
     protected gameOver() {
         this.model.isGameOver = true;
 
-        console.log("tt");
-
-        // notify everyone interested
         this.sendMessage(Messages.MSG_GAME_OVER);
 
         this.scene.invokeWithDelay(5000, () => {

@@ -33,6 +33,7 @@ export class ShipController extends SpaceImpactBaseComponent {
     move(direction: Direction, delta: number) {
         let pixiObj = this.owner.getPixiObj();
         let movement = this.model.shipSpeed * delta;
+        let topPadding = 5;
 
         switch(direction) {
             case Direction.Up:
@@ -50,8 +51,8 @@ export class ShipController extends SpaceImpactBaseComponent {
         }
 
         // check boundaries
-        this.owner.getPixiObj().position.x = Math.max(0, Math.min(this.sceneWidth, this.owner.getPixiObj().position.x));
-        this.owner.getPixiObj().position.y = Math.max(0, Math.min(this.sceneHeight, this.owner.getPixiObj().position.y));
+        pixiObj.position.x = Math.max(0, Math.min(this.sceneWidth - pixiObj.width, pixiObj.position.x));
+        pixiObj.position.y = Math.max(topPadding + pixiObj.height / 2, Math.min(this.sceneHeight - pixiObj.height / 2, pixiObj.position.y));
     }
 
     tryFire(absolute: number): boolean {
