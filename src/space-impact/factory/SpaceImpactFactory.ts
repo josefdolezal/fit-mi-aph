@@ -25,6 +25,7 @@ import { CollisionResolver } from '../component/CollisionResolver';
 import { SoundComponent } from '../component/SoundManager';
 import { Container } from 'pixi.js';
 import { LivesComponent } from '../component/LivesComponent';
+import { ScoreComponent } from '../component/ScoreComponent';
 
 export default class SpaceImpactFactory {
 
@@ -139,7 +140,16 @@ export default class SpaceImpactFactory {
     }
 
     createScore(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
+        let scene = owner.getScene();
+        let text = new PIXICmp.Text();
+        text.style = this.defaultTextStyle()
 
+        new PIXIObjectBuilder(scene)
+            .relativePos(0.99, 0.01)
+            .anchor(1, 0)
+            .scale(SpaceImpactFactory.globalScale)
+            .withComponent(new ScoreComponent())
+            .build(new PIXICmp.Text(Tags.TAG_SCORE), scene.stage)
     }
 
     createShip(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
@@ -215,6 +225,13 @@ export default class SpaceImpactFactory {
             .withComponent(this.enemyMovement(type))
             .withComponent(this.enemyShooting(type))
             .build(sprite, rootObject);
+    }
+
+    protected defaultTextStyle(): PIXI.TextStyle {
+        return new PIXI.TextStyle({
+            fontFamily: "Comfont",
+            fill: "0xFFFFFF"
+        });
     }
 
     protected enemyMovement(enemyType: EnemyType): EnemyMovement {
