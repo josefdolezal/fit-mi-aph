@@ -3,7 +3,6 @@ import { ATTR_DYNAMICS } from '../../../ts/engine/Constants';
 import { SpaceImpactModel } from '../SpaceImpactModel';
 import { PIXICmp } from '../../../ts/engine/PIXIObject';
 // import { CopterSpawner } from './CopterSpawner';
-// import { CollisionManager } from './CollisionManager';
 // import { GameManager } from './GameManager';
 // import { CannonInputController } from './CannonController';
 import PIXIObjectBuilder from '../../../ts/engine/PIXIObjectBuilder';
@@ -29,6 +28,7 @@ import { MissileComponent } from '../component/MissileComponent';
 import { EnemyType } from '../model/EnemyType';
 import { EnemyMovement, EnemyLinearMovement, EnemyFuzzyMovement, MovementDirection } from '../component/EnemyMovement';
 import { EnemyShooting, EnemyNoShooting, EnemySimpleShooting } from '../component/EnemyShooting';
+import { CollisionManager } from '../component/CollisionManager';
 
 export default class SpaceImpactFactory {
 
@@ -61,7 +61,7 @@ export default class SpaceImpactFactory {
         //     // .withComponent(new GameManager())
         //     // .withComponent(new SoundComponent())
         //     // .withComponent(new CopterSpawner())
-        //     // .withComponent(new CollisionManager())
+            .withComponent(new CollisionManager())
         //     // .withComponent(new CollisionResolver())
         //     // .withComponent(deathChecker)
         //     //.withComponent(new DebugComponent(document.getElementById("debugSect")))
@@ -135,7 +135,6 @@ export default class SpaceImpactFactory {
             .relativePos(0.1, 0.5)
             .anchor(0, 0.5)
             .scale(SpaceImpactFactory.globalScale)
-            .withFlag(Flags.FLAG_COLLIDABLE)
             .withComponent(new ShipArrowInputController())
             .build(new PIXICmp.Sprite(Tags.TAG_SHIP, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_SHIP)), scene.stage);
     }
@@ -159,7 +158,7 @@ export default class SpaceImpactFactory {
             .scale(SpaceImpactFactory.globalScale)
             .anchor(0, 0.5)
             .globalPos(shipPosition.x + shipPixi.width, shipPosition.y)
-            .withFlag(Flags.FLAG_COLLIDABLE)
+            .withFlag(Flags.FLAG_MISSILE)
             .withAttribute(Attributes.ATTR_DYNAMICS, dynamics)
             .withComponent(new MissileComponent())
             .build(new PIXICmp.Sprite(Tags.TAG_SHIP_MISSILE, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_MISSILE)), rootObject);
@@ -177,7 +176,7 @@ export default class SpaceImpactFactory {
             .scale(SpaceImpactFactory.globalScale)
             .anchor(0, 0.5)
             .globalPos(enemyPosition.x - (sprite.width * SpaceImpactFactory.globalScale), enemyPosition.y)
-            .withFlag(Flags.FLAG_COLLIDABLE)
+            .withFlag(Flags.FLAG_SHIP_MISSILE_COLLIDABLE)
             .withAttribute(Attributes.ATTR_DYNAMICS, dynamics)
             .withComponent(new MissileComponent())
             .build(sprite, rootObject);
@@ -198,7 +197,7 @@ export default class SpaceImpactFactory {
             .scale(SpaceImpactFactory.globalScale)
             .anchor(0, 0.5)
             .globalPos(scene.app.screen.width, position)
-            .withFlag(Flags.FLAG_COLLIDABLE)
+            .withFlag(Flags.FLAG_SHIP_MISSILE_COLLIDABLE)
             .withComponent(this.enemyMovement(type))
             .withComponent(this.enemyShooting(type))
             .build(sprite, rootObject);
