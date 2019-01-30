@@ -1,22 +1,14 @@
 import { ATTR_DYNAMICS } from '../../../ts/engine/Constants';
-// import { SoundComponent } from './SoundComponent';
 import { SpaceImpactModel } from '../SpaceImpactModel';
 import { PIXICmp } from '../../../ts/engine/PIXIObject';
-// import { CopterSpawner } from './CopterSpawner';
-// import { GameManager } from './GameManager';
-// import { CannonInputController } from './CannonController';
 import PIXIObjectBuilder from '../../../ts/engine/PIXIObjectBuilder';
 import Vec2 from '../../../ts/utils/Vec2';
-// import { ParatrooperComponent } from './ParatrooperComponent';
 import { KeyInputComponent } from '../../../ts/components/KeyInputComponent';
 import Scene from '../../../ts/engine/Scene';
 import DebugComponent from '../../../ts/components/DebugComponent';
 import { GenericComponent } from '../../../ts/components/GenericComponent';
 import Dynamics from '../../../ts/utils/Dynamics';
-// import { CopterMovement } from './CopterMovement';
 import ChainingComponent from '../../../ts/components/ChainingComponent';
-// import { DeathAnimation } from './DeathAnimation';
-// import { CollisionResolver } from './CollisionResolver';
 
 import { ShipArrowInputController } from "../component/ShipController";
 
@@ -31,6 +23,8 @@ import { EnemyShooting, EnemyNoShooting, EnemySimpleShooting } from '../componen
 import { CollisionManager } from '../component/CollisionManager';
 import { CollisionResolver } from '../component/CollisionResolver';
 import { SoundComponent } from '../component/SoundManager';
+import { Container } from 'pixi.js';
+import { LivesComponent } from '../component/LivesComponent';
 
 export default class SpaceImpactFactory {
 
@@ -70,6 +64,8 @@ export default class SpaceImpactFactory {
             .build(rootObject);
 
         this.createGround(rootObject);
+        this.createLives(rootObject, model);
+        this.createScore(rootObject, model);
         this.createShip(rootObject, model);
         this.createSimpleEnemy(rootObject, model);
 
@@ -128,6 +124,22 @@ export default class SpaceImpactFactory {
 
         // ship
        
+    }
+
+    createLives(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
+        let scene = owner.getScene()
+        let container = new PIXICmp.Container(Tags.TAG_LIVES);
+
+        new PIXIObjectBuilder(scene)
+            .globalPos(1, 1)
+            .anchor(0, 0)
+            .scale(SpaceImpactFactory.globalScale)
+            .withComponent(new LivesComponent())
+            .build(container, scene.stage);
+    }
+
+    createScore(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
+
     }
 
     createShip(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {

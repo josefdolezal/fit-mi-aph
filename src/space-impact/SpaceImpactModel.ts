@@ -1,7 +1,8 @@
 export class SpaceImpactModel {
     // ========================= dynamic data
     score = 0;
-    lives = 100;
+    lives = 3;
+    maxLives = 3;
     isGameOver = false;
     
     shipSpeed = 0.02;
