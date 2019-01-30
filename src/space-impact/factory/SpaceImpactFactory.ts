@@ -26,6 +26,7 @@ import { SoundComponent } from '../component/SoundManager';
 import { Container } from 'pixi.js';
 import { LivesComponent } from '../component/LivesComponent';
 import { ScoreComponent } from '../component/ScoreComponent';
+import { GameManager} from '../component/GameManager';
 
 export default class SpaceImpactFactory {
 
@@ -55,7 +56,7 @@ export default class SpaceImpactFactory {
         // add root components
         builder
             .withComponent(new KeyInputComponent())
-        //     // .withComponent(new GameManager())
+            .withComponent(new GameManager())
             .withComponent(new SoundComponent())
         //     // .withComponent(new CopterSpawner())
             .withComponent(new CollisionManager())

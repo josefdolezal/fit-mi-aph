@@ -22,7 +22,7 @@ export class SpaceImpactModel {
 
     reset() {
         this.score = 0;
-        this.lives = 100;
+        this.lives = 3;
         this.isGameOver = false;
     }
 }
