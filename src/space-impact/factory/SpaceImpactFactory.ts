@@ -30,6 +30,7 @@ import { EnemyMovement, EnemyLinearMovement, EnemyFuzzyMovement, MovementDirecti
 import { EnemyShooting, EnemyNoShooting, EnemySimpleShooting } from '../component/EnemyShooting';
 import { CollisionManager } from '../component/CollisionManager';
 import { CollisionResolver } from '../component/CollisionResolver';
+import { SoundComponent } from '../component/SoundManager';
 
 export default class SpaceImpactFactory {
 
@@ -60,7 +61,7 @@ export default class SpaceImpactFactory {
         builder
             .withComponent(new KeyInputComponent())
         //     // .withComponent(new GameManager())
-        //     // .withComponent(new SoundComponent())
+            .withComponent(new SoundComponent())
         //     // .withComponent(new CopterSpawner())
             .withComponent(new CollisionManager())
             .withComponent(new CollisionResolver())
