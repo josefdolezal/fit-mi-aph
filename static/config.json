@@ -4,7 +4,7 @@
     "missileVelocity": 35,
     "enemySpeed": 10,
     "shootingRate": 10,
-    "enemyShootingRate": 0.5,
+    "enemyShootingRate": 1000,
     "movingEnemyRange": 17,
     "afterWaveSpareTime": 1500,
     "levels": [

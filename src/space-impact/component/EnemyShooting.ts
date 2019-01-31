@@ -34,15 +34,19 @@ export class EnemyShooting extends DynamicsComponent {
     }
 
     tryFire(absolute: number): boolean {
-        if (!checkTime(this.lastShot, absolute, this.model.enemyShootingRate)) {
-            return false;
-        }
-        
-        this.lastShot = absolute;
-        this.factory.createEnemyMissile(this.owner, this.model);
-        this.sendMessage(Messages.MSG_ENEMY_MISSILE_SHOT);
+        if(absolute - this.lastShot > this.model.enemyShootingRate) {
+            this.lastShot = absolute;
 
-        return true;
+            // 90% probability of actual shoot
+            if(Math.random() > 0.1) {
+                this.factory.createEnemyMissile(this.owner, this.model);
+                this.sendMessage(Messages.MSG_ENEMY_MISSILE_SHOT);
+            }
+
+            return true;
+        }
+
+        return false;
     }
 }
 

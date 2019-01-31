@@ -49,7 +49,7 @@ export class SpaceImpactModel {
     missileVelocity = 35; 
     enemySpeed = 10;
     shootingRate = 10;
-    enemyShootingRate = 5;
+    enemyShootingRate = 1000;
     movingEnemyRange = 10;
     afterWaveSpareTime = 1500;
 
