@@ -51,7 +51,7 @@ class SpaceImpact {
 
     onAssetsLoaded() {
         let factory = new SpaceImpactFactory();
-        factory.resetGame(this.engine.scene);
+        factory.resetGame(this.engine.scene, true);
     }
 }
 

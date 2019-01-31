@@ -5,7 +5,7 @@
     "enemySpeed": 10,
     "shootingRate": 10,
     "enemyShootingRate": 5,
-    "movingEnemyRange": 10,
+    "movingEnemyRange": 17,
     "levels": [
         {
             "waves": [

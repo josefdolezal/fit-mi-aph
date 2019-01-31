@@ -38,7 +38,7 @@ export default class SpaceImpactFactory {
     // calculated in Paratrooper.ts
     static screenWidth = 1;
 
-    initializeGame(rootObject: PIXICmp.ComponentObject, model: SpaceImpactModel) {
+    initializeGame(rootObject: PIXICmp.ComponentObject, model: SpaceImpactModel, showIntro: boolean) {
         let scene = rootObject.getScene();
         let builder = new PIXIObjectBuilder(scene);
 
@@ -54,7 +54,12 @@ export default class SpaceImpactFactory {
             .build(rootObject);
 
         this.createGround(rootObject);
-        this.createIntro(rootObject, model);   
+        
+        if(showIntro) {
+            this.createIntro(rootObject, model);
+        } else {
+            this.startGame(rootObject, model);
+        }
     }
 
     startGame(rootObject: PIXICmp.ComponentObject, model: SpaceImpactModel) {
@@ -62,7 +67,7 @@ export default class SpaceImpactFactory {
         this.createLives(rootObject, model);
         this.createScore(rootObject, model);
         this.createShip(rootObject, model);
-        this.createSimpleEnemy(rootObject, model);
+        this.createEnemy(EnemyType.Moving, rootObject, model);
     }
 
     createIntro(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
@@ -160,12 +165,11 @@ export default class SpaceImpactFactory {
             .build(sprite, rootObject);
     }
 
-    createSimpleEnemy(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
+    createEnemy(type: EnemyType, owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
         let scene = owner.getScene();
         let rootObject = scene.stage;
         let screenHeight = scene.app.screen.height;
-        
-        let type = EnemyType.Shooting;
+
         let sprite = this.enemySprite(type);
         
         // Random on-screen vertical position
@@ -242,13 +246,13 @@ export default class SpaceImpactFactory {
             case EnemyType.Moving: return new EnemySimpleShooting();
         }
     }
-
-    resetGame(scene: Scene) {
+ 
+    resetGame(scene: Scene, showIntro: boolean = false) {
         scene.clearScene();
         let model = new SpaceImpactModel();
         model.loadModel(PIXI.loader.resources[Resources.DATA_CONFIG].data);
         scene.addGlobalAttribute(Attributes.ATTR_FACTORY, this);
         scene.addGlobalAttribute(Attributes.ATTR_MODEL, model);
-        this.initializeGame(scene.stage, model);
+        this.initializeGame(scene.stage, model, showIntro);
     }
 }
