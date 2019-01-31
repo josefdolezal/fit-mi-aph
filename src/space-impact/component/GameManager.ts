@@ -9,6 +9,7 @@ export class GameManager extends SpaceImpactBaseComponent {
         super.onInit();
 
         this.subscribe(Messages.MSG_SHIP_KILLED);
+        this.subscribe(Messages.MSG_ENEMY_ESCAPED);
         this.subscribe(Messages.MSG_ENEMY_KILLED);
     }
 
@@ -23,9 +24,18 @@ export class GameManager extends SpaceImpactBaseComponent {
             if(this.model.lives == 0) {
                 this.gameOver();
             }
-        } else if(msg.action == Messages.MSG_ENEMY_KILLED) {
-
+        } else if(msg.action == Messages.MSG_ENEMY_KILLED || msg.action == Messages.MSG_ENEMY_ESCAPED) {
+            this.model.enemiesLeft -= 1;
+            
+            // We hit the enemy, check if it's end of the game
+            if(this.isGameWon()) {
+                this.gameOver();
+            }
         }
+    }
+
+    protected isGameWon(): boolean {
+        return this.model.currentLevel == this.model.levels.length - 1 && this.model.enemiesLeft <= 0;
     }
 
     protected gameOver() {
@@ -41,7 +51,11 @@ export class GameManager extends SpaceImpactBaseComponent {
             .getPixiObj()
             .visible = true;
 
-        this.sendMessage(Messages.MSG_GAME_OVER);
+        if(this.model.lives > 0) {
+            this.sendMessage(Messages.MSG_GAME_WON);
+        } else {
+            this.sendMessage(Messages.MSG_GAME_OVER);
+        }
 
         this.scene.invokeWithDelay(5000, () => {
             this.factory.resetGame(this.scene);

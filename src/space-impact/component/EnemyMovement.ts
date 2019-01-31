@@ -3,6 +3,7 @@ import { Point } from 'pixi.js';
 import Vec2 from '../../../ts/utils/Vec2';
 import { SpaceImpactModel } from '../SpaceImpactModel';
 import { Attributes } from '../config/Attributes';
+import { Messages } from '../config/Messages';
 
 export enum MovementDirection {
     Up,
@@ -28,8 +29,10 @@ export class EnemyMovement extends DynamicsComponent {
         // Remove missile if it's off screen
         let globalPos = this.owner.getPixiObj().toGlobal(new Point(0, 0));
 
-        if (globalPos.x < 0)
+        if (globalPos.x < 0) {
             this.owner.remove();
+            this.sendMessage(Messages.MSG_ENEMY_ESCAPED);
+        }
     }
 }
 

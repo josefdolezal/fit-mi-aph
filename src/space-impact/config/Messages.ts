@@ -6,6 +6,7 @@ export class Messages {
     static readonly MSG_COLLISION = "MSG_COLLISION";
 
     static readonly MSG_ENEMY_KILLED = "MSG_ENEMY_KILLED";
+    static readonly MSG_ENEMY_ESCAPED = "MSG_ENEMY_ESCAPED";
     static readonly MSG_SHIP_KILLED = "MSG_SHIP_KILLED";
 
     static readonly MSG_GAME_OVER = "MSG_GAME_OVER";

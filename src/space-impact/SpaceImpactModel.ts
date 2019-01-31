@@ -35,7 +35,11 @@ export class SpaceImpactModel {
     lives = 3;
     isGameOver = false;
     levels: Level[] = [];
-    
+    currentLevel = 0;
+    currentWave = 0;
+    enemiesLeft = 0;
+    enemyType = EnemyType.Simple;
+
     // ========================= static data
     maxLives = 3;
     shipSpeed = 0.02;
@@ -63,6 +67,31 @@ export class SpaceImpactModel {
 
             return new Level(waves);
         });
+    }
+
+    loadLevel() {
+        // Check if there is another level
+        if(this.currentLevel >= this.levels.length - 1) {
+            this.isGameOver = true;
+            return;
+        }
+        // Load the level
+        this.currentLevel += 1;
+        this.currentWave = 0;
+        // Load first wave
+        this.loadWave();
+    }
+
+    protected loadWave() {
+        let level = this.levels[this.currentLevel];
+        
+        if(this.currentWave >= level.waves.length - 1) {
+            return;
+        }
+
+        this.currentWave += 1;
+        this.enemyType = level.waves[this.currentWave].enemy;
+        this.enemiesLeft = level.waves[this.currentWave].count;
     }
 
     reset() {

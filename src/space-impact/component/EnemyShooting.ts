@@ -34,8 +34,9 @@ export class EnemyShooting extends DynamicsComponent {
     }
 
     tryFire(absolute: number): boolean {
-        if (!checkTime(this.lastShot, absolute, this.model.enemyShootingRate))
+        if (!checkTime(this.lastShot, absolute, this.model.enemyShootingRate)) {
             return false;
+        }
         
         this.lastShot = absolute;
         this.factory.createEnemyMissile(this.owner, this.model);
