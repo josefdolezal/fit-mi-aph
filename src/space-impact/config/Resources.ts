@@ -8,4 +8,6 @@ export class Resources {
     static readonly SOUND_SHIP_SHOT = "SOUND_SHIP_SHOT";
     static readonly SOUND_ENEMY_SHOT = "SOUND_ENEMY_SHOT";
     static readonly SOUND_EXPLOSION = "SOUND_EXPLOSION";
+    static readonly SOUND_GAME_OVER = "SOUND_GAME_OVER";
+    static readonly SOUND_GAME_WON = "SOUND_GAME_WON";
 }

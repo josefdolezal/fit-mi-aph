@@ -1,14 +1,7 @@
-// import { ParatrooperModel } from './ParatrooperModel';
-
-
-import Component from '../../ts/engine/Component';
-import DebugComponent from '../../ts/components/DebugComponent';
-import Scene from '../../ts/engine/Scene';
 import { PixiRunner } from '../../ts/PixiRunner'
-import { PIXICmp } from '../../ts/engine/PIXIObject';
 import SpaceImpactFactory from './factory/SpaceImpactFactory';
 import {
-    ATTR_FACTORY, SPRITES_RESOLUTION_HEIGHT, DATA_JSON, SCENE_HEIGHT,
+    SPRITES_RESOLUTION_HEIGHT, SCENE_HEIGHT,
 } from './config/Constants';
 import { Resources } from './config/Resources';
 
@@ -48,17 +41,9 @@ class SpaceImpact {
             .add(Resources.TEXTURE_TAG_LIVE, 'static/live.png')
             .add(Resources.SOUND_SHIP_SHOT, 'static/shot.mp3')
             .add(Resources.SOUND_ENEMY_SHOT, 'static/shot.mp3')
-            // .add(TEXTURE_COPTER_LEFT, 'static/paratrooper/copter_left.png')
-            // .add(TEXTURE_COPTER_RIGHT, 'static/paratrooper/copter_right.png')
-            // .add(TEXTURE_PARATROOPER_PARACHUTE, 'static/paratrooper/paratrooper_parachute.png')
-            // .add(TEXTURE_PARATROOPER, 'static/paratrooper/paratrooper.png')
-            // .add(TEXTURE_PROJECTILE, 'static/paratrooper/projectile.png')
-            // .add(TEXTURE_TOWER, 'static/paratrooper/tower.png')
-            // .add(TEXTURE_TURRET, 'static/paratrooper/turret.png')
-            // .add(SOUND_FIRE, 'static/paratrooper/fire.mp3')
-            // .add(SOUND_GAMEOVER, 'static/paratrooper/gameover.mp3')
-            // .add(SOUND_KILL, 'static/paratrooper/kill.mp3')
-            // .add(DATA_JSON, 'static/paratrooper/config.json')
+            .add(Resources.SOUND_GAME_OVER, 'static/game_over.mp3')
+            .add(Resources.SOUND_EXPLOSION, 'static/explosion.mp3')
+            .add(Resources.SOUND_GAME_WON, 'static/game_won.mp3')
             .load(() => this.onAssetsLoaded());
     }
 
@@ -69,4 +54,3 @@ class SpaceImpact {
 }
 
 new SpaceImpact();
-
