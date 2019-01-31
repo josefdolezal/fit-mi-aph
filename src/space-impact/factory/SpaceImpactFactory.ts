@@ -31,6 +31,7 @@ import { GamerOverComponent } from '../component/GameOverComponent';
 import { IntroComponent } from '../component/IntroComponent';
 import { EnemySpawner } from '../component/EnemySpawner';
 import { MultiplayerComponent } from '../component/MultiplayerComponent';
+import { LevelComponent } from '../component/LevelComponent';
 
 export default class SpaceImpactFactory {
 
@@ -65,6 +66,7 @@ export default class SpaceImpactFactory {
         this.createGameOver(rootObject);
         this.createLives(rootObject, model);
         this.createScore(rootObject, model);
+        this.createLevel(rootObject);
         this.createShip(false, rootObject, model);
 
         if(model.multiplayerEnabled) {
@@ -84,6 +86,23 @@ export default class SpaceImpactFactory {
             .scale(SpaceImpactFactory.globalScale)
             .withComponent(new IntroComponent())
             .build(new PIXICmp.Sprite(Tags.TAG_INTRO, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_INTRO)), scene.stage);
+    }
+
+    createLevel(owner: PIXICmp.ComponentObject) {
+        let scene = owner.getScene();
+        let text = new PIXICmp.Text(Tags.TAG_LEVEL);
+        let style = this.defaultTextStyle();
+
+        style.fontSize = 35;
+        text.style = style;
+        text.visible = false;
+
+        new PIXIObjectBuilder(scene)
+            .relativePos(0.5, 0.5)
+            .anchor(0.5, 0.5)
+            .scale(SpaceImpactFactory.globalScale)
+            .withComponent(new LevelComponent())
+            .build(text, scene.stage);
     }
 
     createLives(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
