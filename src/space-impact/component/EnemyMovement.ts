@@ -28,8 +28,9 @@ export class EnemyMovement extends DynamicsComponent {
 
         // Remove missile if it's off screen
         let globalPos = this.owner.getPixiObj().toGlobal(new Point(0, 0));
+        let width = this.owner.getPixiObj().width;
 
-        if (globalPos.x < 0) {
+        if (globalPos.x < -width) {
             this.owner.remove();
             this.sendMessage(Messages.MSG_ENEMY_ESCAPED);
         }

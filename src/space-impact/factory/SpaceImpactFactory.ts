@@ -170,9 +170,11 @@ export default class SpaceImpactFactory {
         let screenHeight = scene.app.screen.height;
 
         let sprite = this.enemySprite(type);
+        let height = sprite.height * SpaceImpactFactory.globalScale;
+        let sidePadding = type == EnemyType.Moving ? model.movingEnemyRange : 0;
         
         // Random on-screen vertical position
-        let position = Math.max(sprite.height / 2, Math.min(screenHeight - sprite.height / 2, Math.random() * screenHeight));
+        let position = Math.max(height / 2 + sidePadding + 5, Math.min(screenHeight - height / 2 - sidePadding, Math.random() * screenHeight));
 
         new PIXIObjectBuilder(scene)
             .scale(SpaceImpactFactory.globalScale)
