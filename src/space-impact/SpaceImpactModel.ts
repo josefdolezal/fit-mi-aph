@@ -79,8 +79,7 @@ export class SpaceImpactModel {
     // Adds next level and loads it's first wave.
     loadLevel() {
         // Check if there is another level
-        if(this.currentLevel >= this.levels.length - 1) {
-            this.isGameOver = true;
+        if(this.currentLevel >= this.levels.length) {
             return;
         }
 
@@ -91,7 +90,7 @@ export class SpaceImpactModel {
 
     loadWave() {
         // Check 
-        if(this.currentLevel >= this.levels.length || this.currentWave >= this.levels[this.currentWave].waves.length) {
+        if(this.currentLevel >= this.levels.length || this.currentWave >= this.levels[this.currentLevel].waves.length) {
             return;
         }
 
