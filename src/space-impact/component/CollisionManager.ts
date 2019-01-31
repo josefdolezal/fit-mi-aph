@@ -8,13 +8,11 @@ import { States } from '../config/States';
 import SpaceImpactBaseComponent from "./SpaceImpactBaseComponent";
 import { Tags } from '../config/Tags';
 
-/**
- * Entity that keeps info about a collision
- */
+/** Entity that keeps info about a collision */
 export class CollisionInfo {
-    // hit unit
+    // Target of collision
     collidable: PIXICmp.ComponentObject;
-    // projectile that hit given unit
+    // Object that made the collision
     trigger: PIXICmp.ComponentObject;
 
     constructor(collidable: PIXICmp.ComponentObject, trigger: PIXICmp.ComponentObject) {
@@ -23,12 +21,13 @@ export class CollisionInfo {
     }
 }
 
-/**
- * Simple collision manager
- */
+/** Simple collision manager */
 export class CollisionManager extends SpaceImpactBaseComponent {
+    /** Objects that collides with ship missile */
     shipMissileCollidables = new Array<PIXICmp.ComponentObject>();
+    /** Missiles created by ship/player */
     shipMissiles = new Array<PIXICmp.ComponentObject>();
+    /** Collection of existing ships */
     ships = new Array<PIXICmp.ComponentObject>();
 
     onInit() {
@@ -47,7 +46,7 @@ export class CollisionManager extends SpaceImpactBaseComponent {
     onUpdate(delta, absolute) {
         let collides = new Array<CollisionInfo>();
 
-        // O(m^n), we don't suppose there will be more than 50 units in total
+        // Check each existing missile with each existing collidable
         for (let missile of this.shipMissiles) {
             if(missile.getState() != States.STATE_DEAD) {
                 for (let collidable of this.shipMissileCollidables) {
@@ -67,6 +66,7 @@ export class CollisionManager extends SpaceImpactBaseComponent {
             }
         }
 
+        // Check all enemy objects if they hit the ship
         for(let ship of this.ships) {
             if(ship.getState() != States.STATE_DEAD) {
                 for(let collidable of this.shipMissileCollidables) {
@@ -92,16 +92,12 @@ export class CollisionManager extends SpaceImpactBaseComponent {
         }
     }
 
-    /**
-    * Checks horizontal intersection
-    */
+    /** Checks horizontal intersection */
     private testHorizIntersection(boundsA: PIXI.Rectangle, boundsB: PIXI.Rectangle): number {
         return Math.min(boundsA.right, boundsB.right) - Math.max(boundsA.left, boundsB.left);
     }
 
-    /**
-     * Checks vertical intersection 
-     */
+    /** Checks vertical intersection */
     private testVertIntersection(boundsA: PIXI.Rectangle, boundsB: PIXI.Rectangle): number {
         return Math.min(boundsA.bottom, boundsB.bottom) - Math.max(boundsA.top, boundsB.top);
     }

@@ -8,11 +8,8 @@ import SpaceImpactBaseComponent from "./SpaceImpactBaseComponent";
 import { Tags } from '../config/Tags';
 import { PIXICmp } from '../../../ts/engine/PIXIObject';
 
-/**
- * Collision resolver component
- */
+/** Resolves all objects collisions */
 export class CollisionResolver extends SpaceImpactBaseComponent {
-
     onInit() {
         super.onInit();
         this.subscribe(Messages.MSG_COLLISION);
@@ -28,7 +25,7 @@ export class CollisionResolver extends SpaceImpactBaseComponent {
         }
     }
 
-    // handles collision with all objects
+    /** Handle the collision */
     protected handleCollision(msg: Msg) {
         let collision = <CollisionInfo>msg.data;
 
@@ -67,6 +64,7 @@ export class CollisionResolver extends SpaceImpactBaseComponent {
         }
     }
 
+    /** Remove object from scene safely (so it's not removed multiple times) */
     protected safeRemove(object: PIXICmp.ComponentObject) {
         if(object.getPixiObj().parent != null) {
             object.remove();

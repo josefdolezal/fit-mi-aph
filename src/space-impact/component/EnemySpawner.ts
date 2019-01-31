@@ -2,8 +2,9 @@ import SpaceImpactBaseComponent from './SpaceImpactBaseComponent';
 import { Messages } from '../config/Messages';
 import Msg from '../../../ts/engine/Msg';
 
+/** Spawns new enemy if it's possible */
 export class EnemySpawner extends SpaceImpactBaseComponent {
-    
+    /** Time of last spawn enemy */
     private lastSpawn = 0;
 
     onInit() {
@@ -28,7 +29,7 @@ export class EnemySpawner extends SpaceImpactBaseComponent {
             return;
         }
 
-        // Spawn twice a second
+        // Spawn enemy every 800ms
         if(absolute - this.lastSpawn > 800 && this.model.enemiesToSpawn > 0) {
             this.lastSpawn = absolute;
 

@@ -5,16 +5,15 @@ import { SpaceImpactModel } from '../SpaceImpactModel';
 import { Attributes } from '../config/Attributes';
 import { Messages } from '../config/Messages';
 
+/** Represents enemy movement direction */
 export enum MovementDirection {
     Up,
     Down
 }
 
-/**
- * Enemy movement type
- */
+/** Enemy movement type */
 export class EnemyMovement extends DynamicsComponent {
-
+    /** Game model */
     model: SpaceImpactModel;
 
     onInit() {
@@ -26,10 +25,10 @@ export class EnemyMovement extends DynamicsComponent {
     onUpdate(delta, absolute) {
         super.onUpdate(delta, absolute);
 
-        // Remove missile if it's off screen
         let globalPos = this.owner.getPixiObj().toGlobal(new Point(0, 0));
         let width = this.owner.getPixiObj().width;
 
+        // Make the enemy go offscreen and then remove it
         if (globalPos.x < -width) {
             this.owner.remove();
             this.sendMessage(Messages.MSG_ENEMY_ESCAPED);
@@ -37,6 +36,7 @@ export class EnemyMovement extends DynamicsComponent {
     }
 }
 
+/** Linear movement only on X axis */
 export class EnemyLinearMovement extends EnemyMovement {
     onInit() {
         super.onInit();
@@ -45,9 +45,13 @@ export class EnemyLinearMovement extends EnemyMovement {
     }
 }
 
+/** Moves enemy on both X and Y axis by given range. */
 export class EnemyFuzzyMovement extends EnemyMovement {
+    /** Current enemy movement direction */
     protected movementDirection = MovementDirection.Down
+    /** Maximum (top) location where the enemy may be */
     protected upperBound: number;
+    /** Minimum (bottom) location where the enemy may be */
     protected bottomBound: number;
 
     constructor(movementDirection: MovementDirection, gameSpeed: number = 1) {
@@ -75,6 +79,7 @@ export class EnemyFuzzyMovement extends EnemyMovement {
     onUpdate(delta, absolute) {
         let position = this.owner.getPixiObj().position;
 
+        // Change the direction if enemy hits the bounds
         if(this.movementDirection == MovementDirection.Up && position.y <= this.upperBound) {
             this.movementDirection = MovementDirection.Down;
             this.dynamics.velocity = this.velocityForMovement(this.movementDirection);
@@ -86,6 +91,7 @@ export class EnemyFuzzyMovement extends EnemyMovement {
         super.onUpdate(delta, absolute);
     }
 
+    /** Determines velocity for given movement */
     protected velocityForMovement(movement: MovementDirection): Vec2 {
         let speed = this.model.enemySpeed;
 

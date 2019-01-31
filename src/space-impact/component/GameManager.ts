@@ -4,6 +4,7 @@ import Msg from "../../../ts/engine/Msg";
 import { Tags } from "../config/Tags";
 import { Flags } from "../config/Flags";
 
+/** Manages game logic */
 export class GameManager extends SpaceImpactBaseComponent {
     onInit() {
         super.onInit();
@@ -34,17 +35,18 @@ export class GameManager extends SpaceImpactBaseComponent {
     }
 
     onUpdate(delta, absolute) {
-        // The game is over
+        // The game is over or in progress
         if(this.model.isGameOver || this.isEnemiesLeft()) {
             return;
         }
 
-        // The should over now
+        // The game is over and no new enemies will be spawn
         if(this.isEndOfTheGame()) {
             this.gameOver();
             return;
         }
 
+        // No enemies but the game is not over, create new wave or level
         if(this.isNextWaveAvailable()) {
             this.model.currentWave += 1;
             this.model.loadWave();
@@ -58,22 +60,27 @@ export class GameManager extends SpaceImpactBaseComponent {
         }
     }
 
+    /** Determines whether the game can continue or is over yet */
     protected isEndOfTheGame(): boolean {
         return !this.isEnemiesLeft() && !this.isNextWaveAvailable() && !this.isNextLevelAvailable();
     }
 
+    /** Determines whether there will be any enemies in current wave */
     protected isEnemiesLeft(): boolean {
         return this.model.enemiesLeft > 0 || this.model.enemiesToSpawn > 0
     }
 
+    /** Determines whether there will be next wave */
     protected isNextWaveAvailable(): boolean {
         return this.model.currentWave < this.model.wavesCount - 1;
     }
 
+    /** Determines whether ther will be next level */
     protected isNextLevelAvailable(): boolean {
         return this.model.currentLevel < this.model.levelsCount - 1;
     }
 
+    /** Ends the game */
     protected gameOver() {
         this.model.isGameOver = true;
 
@@ -82,17 +89,20 @@ export class GameManager extends SpaceImpactBaseComponent {
             .findAllObjectsByFlag(Flags.FLAG_GAME_OBJECT)
             .forEach(o => o.remove());
         
+        // Show game over/won info
         this.owner.getScene()
             .findFirstObjectByTag(Tags.TAG_GAME_OVER)
             .getPixiObj()
             .visible = true;
 
+        // Send appropriate messages
         if(this.model.lives > 0) {
             this.sendMessage(Messages.MSG_GAME_WON);
         } else {
             this.sendMessage(Messages.MSG_GAME_OVER);
         }
 
+        // Run the game again with delay
         this.scene.invokeWithDelay(5000, () => {
             this.factory.resetGame(this.scene);
         });

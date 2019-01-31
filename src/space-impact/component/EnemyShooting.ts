@@ -1,18 +1,17 @@
 import { DynamicsComponent } from '../../../ts/components/DynamicsComponent';
 import { Point } from 'pixi.js';
-import { checkTime } from '../Utils';
 import { SpaceImpactModel } from '../SpaceImpactModel';
 import { Attributes } from '../config/Attributes';
 import SpaceImpactFactory from '../factory/SpaceImpactFactory';
 import { Messages } from '../config/Messages';
 
-/**
- * Movement logic for projectile
- */
+/** Shooting logic for enemy */
 export class EnemyShooting extends DynamicsComponent {
-
+    /** Time of last created missile */
     private lastShot = 0;
+    /** Game model */
     protected model: SpaceImpactModel;
+    /** Game objects factory */
     protected factory: SpaceImpactFactory;
 
     onInit() {
@@ -33,12 +32,13 @@ export class EnemyShooting extends DynamicsComponent {
             this.owner.remove();
     }
 
+    /** Try to shoot enemy missile */
     tryFire(absolute: number): boolean {
         if(absolute - this.lastShot > this.model.enemyShootingRate) {
             this.lastShot = absolute;
 
-            // 90% probability of actual shoot
-            if(Math.random() > 0.1) {
+            // 70% probability of actual shoot
+            if(Math.random() > 0.3) {
                 this.factory.createEnemyMissile(this.owner, this.model);
                 this.sendMessage(Messages.MSG_ENEMY_MISSILE_SHOT);
             }
@@ -50,16 +50,16 @@ export class EnemyShooting extends DynamicsComponent {
     }
 }
 
+/** No shooting strategy (enemy won't shoot) */
 export class EnemyNoShooting extends EnemyShooting {
 
 }
 
+/** Enemy shoots without any additional logic  */
 export class EnemySimpleShooting extends EnemyShooting {
     onUpdate(delta, absolute) {
         super.onUpdate(delta, absolute);
 
-        // 5% Shooting probability
-        if(Math.random() < 0.05)
-            this.tryFire(absolute);
+        this.tryFire(absolute);
     }
 }

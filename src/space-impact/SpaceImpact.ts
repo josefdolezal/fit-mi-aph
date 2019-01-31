@@ -5,11 +5,11 @@ import {
 } from './config/Constants';
 import { Resources } from './config/Resources';
 
-
+/** Game entry point */
 class SpaceImpact {
+    /** The game engine */
     engine: PixiRunner;
 
-    // Start a new game
     constructor() {
         this.engine = new PixiRunner();
 
@@ -17,20 +17,19 @@ class SpaceImpact {
 
         let screenHeight = canvas.height;
         
-        // calculate ratio between intended resolution (here 400px of height) and real resolution
-        // - this will set appropriate scale 
+        // Calculate ratio between intended resolution (here 400px of height) and real resolution
         let gameScale = SPRITES_RESOLUTION_HEIGHT / screenHeight;
-        // scale the scene to 50 units if height
+        // Scale the scene to 50 units if height
         let resolution = screenHeight / SCENE_HEIGHT * gameScale;
         this.engine.init(canvas, resolution / gameScale);
 
-        // set global scale which has to be applied for ALL sprites as it will
-        // scale them to defined unit size
+        // Det global scale which has to be applied for ALL sprites as it will
         SpaceImpactFactory.globalScale = 1 / resolution;
 
-        // set resized width according to the current aspect ratio
+        // Set resized width according to the current aspect ratio
         SpaceImpactFactory.screenWidth = SCENE_HEIGHT * (canvas.width / canvas.height);
         
+        // Load all necessary game resources
         PIXI.loader
             .reset()    // necessary for hot reload
             .add(Resources.TEXTURE_TAG_SHIP, 'static/ship.png')
@@ -56,4 +55,5 @@ class SpaceImpact {
     }
 }
 
+// Start the game
 new SpaceImpact();

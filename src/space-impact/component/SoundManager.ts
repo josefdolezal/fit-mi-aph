@@ -2,11 +2,8 @@ import { Messages } from '../config/Messages';
 import { Resources } from '../config/Resources';
 import { GenericComponent } from '../../../ts/components/GenericComponent';
 
-/**
- * Sound handler
- */
+/** Plays sounds effects specific system messages */
 export class SoundComponent extends GenericComponent {
-
     constructor(){
         super(SoundComponent.name);
 

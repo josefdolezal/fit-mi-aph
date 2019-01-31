@@ -1,16 +1,9 @@
-import { ATTR_DYNAMICS } from '../../../ts/engine/Constants';
-import { SpaceImpactModel } from '../SpaceImpactModel';
 import { PIXICmp } from '../../../ts/engine/PIXIObject';
 import PIXIObjectBuilder from '../../../ts/engine/PIXIObjectBuilder';
 import Vec2 from '../../../ts/utils/Vec2';
 import { KeyInputComponent } from '../../../ts/components/KeyInputComponent';
 import Scene from '../../../ts/engine/Scene';
-import DebugComponent from '../../../ts/components/DebugComponent';
-import { GenericComponent } from '../../../ts/components/GenericComponent';
 import Dynamics from '../../../ts/utils/Dynamics';
-import ChainingComponent from '../../../ts/components/ChainingComponent';
-
-import { ShipArrowInputController, ShipKeysInputController } from "../component/ShipController";
 
 import { Attributes } from '../config/Attributes';
 import { Resources } from '../config/Resources';
@@ -23,7 +16,6 @@ import { EnemyShooting, EnemyNoShooting, EnemySimpleShooting } from '../componen
 import { CollisionManager } from '../component/CollisionManager';
 import { CollisionResolver } from '../component/CollisionResolver';
 import { SoundComponent } from '../component/SoundManager';
-import { Container, Point } from 'pixi.js';
 import { LivesComponent } from '../component/LivesComponent';
 import { ScoreComponent } from '../component/ScoreComponent';
 import { GameManager} from '../component/GameManager';
@@ -32,19 +24,22 @@ import { IntroComponent } from '../component/IntroComponent';
 import { EnemySpawner } from '../component/EnemySpawner';
 import { MultiplayerComponent } from '../component/MultiplayerComponent';
 import { LevelComponent } from '../component/LevelComponent';
+import { SpaceImpactModel } from '../SpaceImpactModel';
+import { ShipArrowInputController, ShipKeysInputController } from "../component/ShipController";
 
+/** Game objects factory */
 export default class SpaceImpactFactory {
-
-    // global scale for sprites, calculated in Paratrooper.ts
+    /** Global scale for sprites */
     static globalScale = 1;
-    // width of the screen, depends on current aspect ratio
-    // calculated in Paratrooper.ts
+    /** Width of the screen, depends on current aspect ratio */
     static screenWidth = 1;
 
+    /** Initializes new game (from beginning) */
     initializeGame(rootObject: PIXICmp.ComponentObject, model: SpaceImpactModel, showIntro: boolean) {
         let scene = rootObject.getScene();
         let builder = new PIXIObjectBuilder(scene);
 
+        // Add scene components
         builder
             .withComponent(new KeyInputComponent())
             .withComponent(new GameManager())
@@ -53,8 +48,10 @@ export default class SpaceImpactFactory {
             .withComponent(new CollisionResolver())
             .build(rootObject);
 
+        // Create app background
         this.createGround(rootObject);
         
+        // Determine whether to use game introduction
         if(showIntro) {
             this.createIntro(rootObject, model);
         } else {
@@ -62,6 +59,7 @@ export default class SpaceImpactFactory {
         }
     }
 
+    /** Starts game without introduction */
     startGame(rootObject: PIXICmp.ComponentObject, model: SpaceImpactModel) {
         this.createGameOver(rootObject);
         this.createLives(rootObject, model);
@@ -69,14 +67,17 @@ export default class SpaceImpactFactory {
         this.createLevel(rootObject);
         this.createShip(false, rootObject, model);
 
+        // If secondary user is enabled, create his ship
         if(model.multiplayerEnabled) {
             this.createShip(true, rootObject, model);
         }
 
+        // Create scene objects which must be added after the introduction
         rootObject.addComponent(new EnemySpawner());
         rootObject.addComponent(new MultiplayerComponent());
     }
 
+    /** Create the introduction object */
     createIntro(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
         let scene = owner.getScene();
 
@@ -88,11 +89,13 @@ export default class SpaceImpactFactory {
             .build(new PIXICmp.Sprite(Tags.TAG_INTRO, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_INTRO)), scene.stage);
     }
 
+    /** Create level information object */
     createLevel(owner: PIXICmp.ComponentObject) {
         let scene = owner.getScene();
         let text = new PIXICmp.Text(Tags.TAG_LEVEL);
         let style = this.defaultTextStyle();
 
+        // Set custom font properties
         style.fontSize = 35;
         text.style = style;
         text.visible = false;
@@ -105,6 +108,7 @@ export default class SpaceImpactFactory {
             .build(text, scene.stage);
     }
 
+    /** Create container for live indication */
     createLives(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
         let scene = owner.getScene()
         let container = new PIXICmp.Container(Tags.TAG_LIVES);
@@ -118,6 +122,7 @@ export default class SpaceImpactFactory {
             .build(container, scene.stage);
     }
 
+    /** Create container for score information */
     createScore(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
         let scene = owner.getScene();
         let text = new PIXICmp.Text(Tags.TAG_SCORE);
@@ -132,11 +137,14 @@ export default class SpaceImpactFactory {
             .build(text, scene.stage)
     }
 
+    /** Create player's ship or secondary player's ship */
     createShip(isSecondPlayer: boolean, owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
         let scene = owner.getScene();
         let sprite = new PIXICmp.Sprite(Tags.TAG_SHIP, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_SHIP));
+        // Create different controls for each user
         let controller = isSecondPlayer ? new ShipKeysInputController() : new ShipArrowInputController();
 
+        // Tag secondary user
         if(isSecondPlayer) {
             sprite.setFlag(Flags.FLAG_SECOND_PLAYER);
         }
@@ -150,6 +158,7 @@ export default class SpaceImpactFactory {
             .build(sprite, scene.stage);
     }
 
+    /** Create app background container */
     createGround(owner: PIXICmp.ComponentObject) {
         let ground = new PIXICmp.Graphics(Tags.TAG_GROUND);
 
@@ -159,6 +168,7 @@ export default class SpaceImpactFactory {
         owner.getPixiObj().addChild(ground);
     }
 
+    /** Create player's missile */
     createMissile(ship: PIXICmp.ComponentObject, model: SpaceImpactModel) {
         let dynamics = new Dynamics(new Vec2(model.missileVelocity, 0));
         let rootObject = ship.getScene().stage;
@@ -176,6 +186,7 @@ export default class SpaceImpactFactory {
             .build(new PIXICmp.Sprite(Tags.TAG_SHIP_MISSILE, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_MISSILE)), rootObject);
     }
 
+    /** Create enemy's missile */
     createEnemyMissile(enemy: PIXICmp.ComponentObject, model: SpaceImpactModel) {
         let dynamics = new Dynamics(new Vec2(-model.missileVelocity, 0));
         let scene = enemy.getScene();
@@ -195,6 +206,7 @@ export default class SpaceImpactFactory {
             .build(sprite, rootObject);
     }
 
+    /** Create new enemy with specific properties based on his type */
     createEnemy(type: EnemyType, owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
         let scene = owner.getScene();
         let rootObject = scene.stage;
@@ -218,6 +230,7 @@ export default class SpaceImpactFactory {
             .build(sprite, rootObject);
     }
 
+    /** Create game over/won information container */
     createGameOver(owner: PIXICmp.ComponentObject) {
         let scene = owner.getScene();
         let text = new PIXICmp.Text(Tags.TAG_GAME_OVER);
@@ -236,6 +249,7 @@ export default class SpaceImpactFactory {
             .build(text, scene.stage)
     }
 
+    /** Default text style helper */
     protected defaultTextStyle(): PIXI.TextStyle {
         return new PIXI.TextStyle({
             fontFamily: "Comfont",
@@ -243,6 +257,7 @@ export default class SpaceImpactFactory {
         });
     }
 
+    /** Determines enemy movement component based on his type */
     protected enemyMovement(enemyType: EnemyType): EnemyMovement {
         switch (enemyType) {
             case EnemyType.Simple:
@@ -253,6 +268,7 @@ export default class SpaceImpactFactory {
         }
     }
 
+    /** Determins enemy sprite image based on his type */
     protected enemySprite(enemyType: EnemyType): PIXICmp.Sprite {
         let resource: string
 
@@ -271,6 +287,7 @@ export default class SpaceImpactFactory {
         return new PIXICmp.Sprite(Tags.TAG_ENEMY, PIXI.Texture.fromImage(resource));
     }
 
+    /** Determines enemy shooting based on his type */
     protected enemyShooting(enemyType: EnemyType): EnemyShooting {
         switch(enemyType) {
             case EnemyType.Simple: return new EnemyNoShooting();
@@ -279,6 +296,7 @@ export default class SpaceImpactFactory {
         }
     }
  
+    /** Resets the whole game to it's initial state */
     resetGame(scene: Scene, showIntro: boolean = false) {
         scene.clearScene();
         let model = new SpaceImpactModel();
