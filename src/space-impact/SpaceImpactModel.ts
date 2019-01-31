@@ -4,8 +4,19 @@ export class Wave {
     enemy: EnemyType;
     count: number;
 
-    constructor(enemy: EnemyType, count: number) {
-        this.enemy = enemy;
+    constructor(enemy: string, count: number) {
+        switch(enemy) {
+            case "simple":
+                this.enemy = EnemyType.Simple;
+                break;
+            case "moving":
+                this.enemy = EnemyType.Moving;
+                break;
+            case "shooting":
+                this.enemy = EnemyType.Shooting;
+                break;    
+        }
+
         this.count = count;
     }
 }
@@ -45,7 +56,13 @@ export class SpaceImpactModel {
         this.enemySpeed = data.enemySpeed;
         this.shootingRate = data.shootingRate;
         this.movingEnemyRange = data.movingEnemyRange;
-        this.levels = data.levels;
+        this.levels = data.levels.map(level => {
+            let waves = level.waves.map(wave => {
+                return new Wave(wave.enemy, wave.count);
+            });
+
+            return new Level(waves);
+        });
     }
 
     reset() {
