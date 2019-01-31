@@ -10,4 +10,5 @@ export class Resources {
     static readonly SOUND_EXPLOSION = "SOUND_EXPLOSION";
     static readonly SOUND_GAME_OVER = "SOUND_GAME_OVER";
     static readonly SOUND_GAME_WON = "SOUND_GAME_WON";
+    static readonly DATA_CONFIG = "DATA_CONFIG";
 }

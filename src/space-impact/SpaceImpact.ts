@@ -44,6 +44,7 @@ class SpaceImpact {
             .add(Resources.SOUND_GAME_OVER, 'static/game_over.mp3')
             .add(Resources.SOUND_EXPLOSION, 'static/explosion.mp3')
             .add(Resources.SOUND_GAME_WON, 'static/game_won.mp3')
+            .add(Resources.DATA_CONFIG, 'static/config.json')
             .load(() => this.onAssetsLoaded());
     }
 

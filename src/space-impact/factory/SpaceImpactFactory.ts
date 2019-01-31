@@ -300,7 +300,7 @@ export default class SpaceImpactFactory {
     resetGame(scene: Scene) {
         scene.clearScene();
         let model = new SpaceImpactModel();
-        // model.loadModel(PIXI.loader.resources[DATA_JSON].data);
+        model.loadModel(PIXI.loader.resources[Resources.DATA_CONFIG].data);
         scene.addGlobalAttribute(Attributes.ATTR_FACTORY, this);
         scene.addGlobalAttribute(Attributes.ATTR_MODEL, model);
         this.initializeGame(scene.stage, model);

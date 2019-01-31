@@ -1,0 +1,67 @@
+{
+    "maxLives": 3,
+    "shipSpeed": 0.02,
+    "missileVelocity": 35,
+    "enemySpeed": 10,
+    "shootingRate": 10,
+    "enemyShootingRate": 5,
+    "movingEnemyRange": 10,
+    "levels": [
+        {
+            "waves": [
+                {
+                    "enemy": "simple",
+                    "count": 5
+                },
+                {
+                    "enemy": "shooting",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "waves": [
+                {
+                    "enemy": "simple",
+                    "count": 5
+                },
+                {
+                    "enemy": "moving",
+                    "count": 4
+                },
+                {
+                    "enemy": "simple",
+                    "count": 5
+                },
+                {
+                    "enemy": "shooting",
+                    "count": 1
+                }
+            ]
+        },
+        {
+            "waves": [
+                {
+                    "enemy": "moving",
+                    "count": 5
+                },
+                {
+                    "enemy": "shooting",
+                    "count": 4
+                },
+                {
+                    "enemy": "simple",
+                    "count": 5
+                },
+                {
+                    "enemy": "moving",
+                    "count": 5
+                },
+                {
+                    "enemy": "simple",
+                    "count": 1
+                }
+            ]
+        }
+    ]
+}
