@@ -37,6 +37,9 @@ export class SpaceImpactModel {
     levels: Level[] = [];
     currentLevel = 0;
     currentWave = 0;
+    levelsCount = 0;
+    wavesCount = 0;
+    enemiesToSpawn = 0;
     enemiesLeft = 0;
     enemyType = EnemyType.Simple;
 
@@ -48,6 +51,7 @@ export class SpaceImpactModel {
     shootingRate = 10;
     enemyShootingRate = 5;
     movingEnemyRange = 10;
+    afterWaveSpareTime = 1500;
 
     constructor() {
         this.reset();
@@ -60,6 +64,7 @@ export class SpaceImpactModel {
         this.enemySpeed = data.enemySpeed;
         this.shootingRate = data.shootingRate;
         this.movingEnemyRange = data.movingEnemyRange;
+        this.afterWaveSpareTime = data.afterWaveSpareTime;
         this.levels = data.levels.map(level => {
             let waves = level.waves.map(wave => {
                 return new Wave(wave.enemy, wave.count);
@@ -67,31 +72,34 @@ export class SpaceImpactModel {
 
             return new Level(waves);
         });
+        this.currentLevel = 0;
+        this.levelsCount = this.levels.length;
     }
 
+    // Adds next level and loads it's first wave.
     loadLevel() {
         // Check if there is another level
         if(this.currentLevel >= this.levels.length - 1) {
             this.isGameOver = true;
             return;
         }
-        // Load the level
-        this.currentLevel += 1;
+
         this.currentWave = 0;
-        // Load first wave
+        this.wavesCount = this.levels[this.currentLevel].waves.length;
         this.loadWave();
     }
 
-    protected loadWave() {
-        let level = this.levels[this.currentLevel];
-        
-        if(this.currentWave >= level.waves.length - 1) {
+    loadWave() {
+        // Check 
+        if(this.currentLevel >= this.levels.length || this.currentWave >= this.levels[this.currentWave].waves.length) {
             return;
         }
 
-        this.currentWave += 1;
-        this.enemyType = level.waves[this.currentWave].enemy;
-        this.enemiesLeft = level.waves[this.currentWave].count;
+        let wave = this.levels[this.currentLevel].waves[this.currentWave];
+
+        this.enemyType = wave.enemy;
+        this.enemiesToSpawn = wave.count;
+        this.enemiesLeft = 0;
     }
 
     reset() {
@@ -99,5 +107,12 @@ export class SpaceImpactModel {
         this.lives = 3;
         this.maxLives = 3;
         this.isGameOver = false;
+        this.currentLevel = 0;
+        this.currentWave = 0;
+        this.levelsCount = 0;
+        this.wavesCount = 0;
+        this.enemiesLeft = 0;
+        this.enemiesToSpawn = 0;
+        this.enemiesLeft = 0;
     }
 }

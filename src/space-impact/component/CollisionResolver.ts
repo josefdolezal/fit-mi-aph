@@ -54,6 +54,9 @@ export class CollisionResolver extends SpaceImpactBaseComponent {
             if(collision.collidable.getTag() == Tags.TAG_SHIP) {
                 if(collision.trigger.getTag() == Tags.TAG_ENEMY_MISSILE) {
                     collision.trigger.remove();
+                } else if(collision.trigger.getTag() == Tags.TAG_ENEMY) {
+                    collision.trigger.remove();
+                    this.sendMessage(Messages.MSG_ENEMY_KILLED);
                 }
 
                 this.sendMessage(Messages.MSG_SHIP_KILLED, collision.collidable);

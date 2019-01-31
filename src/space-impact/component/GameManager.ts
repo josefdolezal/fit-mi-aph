@@ -8,9 +8,13 @@ export class GameManager extends SpaceImpactBaseComponent {
     onInit() {
         super.onInit();
 
+        // Subscribe for messages manipulating game state
         this.subscribe(Messages.MSG_SHIP_KILLED);
         this.subscribe(Messages.MSG_ENEMY_ESCAPED);
         this.subscribe(Messages.MSG_ENEMY_KILLED);
+
+        // Load the initial level
+        this.model.loadLevel();
     }
 
     onMessage(msg: Msg) {
@@ -20,22 +24,52 @@ export class GameManager extends SpaceImpactBaseComponent {
 
         if(msg.action == Messages.MSG_SHIP_KILLED) {
             this.model.lives = Math.max(0, this.model.lives - 1);
-            
-            if(this.model.lives == 0) {
+
+            if(this.model.lives <= 0) {
                 this.gameOver();
             }
         } else if(msg.action == Messages.MSG_ENEMY_KILLED || msg.action == Messages.MSG_ENEMY_ESCAPED) {
             this.model.enemiesLeft -= 1;
-            
-            // We hit the enemy, check if it's end of the game
-            if(this.isGameWon()) {
-                this.gameOver();
-            }
         }
     }
 
-    protected isGameWon(): boolean {
-        return this.model.currentLevel == this.model.levels.length - 1 && this.model.enemiesLeft <= 0;
+    onUpdate(delta, absolute) {
+        // The game is over
+        if(this.model.isGameOver || this.isEnemiesLeft()) {
+            return;
+        }
+
+        // The should over now
+        if(this.isEndOfTheGame()) {
+            this.gameOver();
+            return;
+        }
+
+        if(this.isNextWaveAvailable()) {
+            this.model.currentWave += 1;
+            this.model.loadWave();
+            return
+        } else if(this.isNextLevelAvailable()) {
+            this.model.currentLevel += 1;
+            this.model.loadLevel();
+            return;
+        }
+    }
+
+    protected isEndOfTheGame(): boolean {
+        return !this.isEnemiesLeft() && !this.isNextWaveAvailable() && !this.isNextLevelAvailable();
+    }
+
+    protected isEnemiesLeft(): boolean {
+        return this.model.enemiesLeft > 0 || this.model.enemiesToSpawn > 0
+    }
+
+    protected isNextWaveAvailable(): boolean {
+        return this.model.currentWave < this.model.wavesCount - 1;
+    }
+
+    protected isNextLevelAvailable(): boolean {
+        return this.model.currentLevel < this.model.levelsCount - 1;
     }
 
     protected gameOver() {

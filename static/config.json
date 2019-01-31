@@ -6,6 +6,7 @@
     "shootingRate": 10,
     "enemyShootingRate": 0.5,
     "movingEnemyRange": 17,
+    "afterWaveSpareTime": 1500,
     "levels": [
         {
             "waves": [

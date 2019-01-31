@@ -29,6 +29,7 @@ import { ScoreComponent } from '../component/ScoreComponent';
 import { GameManager} from '../component/GameManager';
 import { GamerOverComponent } from '../component/GameOverComponent';
 import { IntroComponent } from '../component/IntroComponent';
+import { EnemySpawner } from '../component/EnemySpawner';
 
 export default class SpaceImpactFactory {
 
@@ -46,11 +47,8 @@ export default class SpaceImpactFactory {
             .withComponent(new KeyInputComponent())
             .withComponent(new GameManager())
             .withComponent(new SoundComponent())
-        //     // .withComponent(new CopterSpawner())
             .withComponent(new CollisionManager())
             .withComponent(new CollisionResolver())
-        //     // .withComponent(deathChecker)
-
             .build(rootObject);
 
         this.createGround(rootObject);
@@ -67,7 +65,8 @@ export default class SpaceImpactFactory {
         this.createLives(rootObject, model);
         this.createScore(rootObject, model);
         this.createShip(rootObject, model);
-        this.createEnemy(EnemyType.Moving, rootObject, model);
+
+        rootObject.addComponent(new EnemySpawner());
     }
 
     createIntro(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
