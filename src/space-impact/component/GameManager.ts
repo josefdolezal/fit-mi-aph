@@ -51,6 +51,8 @@ export class GameManager extends SpaceImpactBaseComponent {
             return
         } else if(this.isNextLevelAvailable()) {
             this.model.currentLevel += 1;
+            this.model.score += 50;
+            this.sendMessage(Messages.MSG_LEVEL_CLEARED);
             this.model.loadLevel();
             return;
         }
