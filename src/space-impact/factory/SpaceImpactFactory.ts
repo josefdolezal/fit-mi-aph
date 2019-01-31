@@ -23,10 +23,11 @@ import { EnemyShooting, EnemyNoShooting, EnemySimpleShooting } from '../componen
 import { CollisionManager } from '../component/CollisionManager';
 import { CollisionResolver } from '../component/CollisionResolver';
 import { SoundComponent } from '../component/SoundManager';
-import { Container } from 'pixi.js';
+import { Container, Point } from 'pixi.js';
 import { LivesComponent } from '../component/LivesComponent';
 import { ScoreComponent } from '../component/ScoreComponent';
 import { GameManager} from '../component/GameManager';
+import { GamerOverComponent } from '../component/GameOverComponent';
 
 export default class SpaceImpactFactory {
 
@@ -66,6 +67,7 @@ export default class SpaceImpactFactory {
             .build(rootObject);
 
         this.createGround(rootObject);
+        this.createGameOver(rootObject);
         this.createLives(rootObject, model);
         this.createScore(rootObject, model);
         this.createShip(rootObject, model);
@@ -136,21 +138,23 @@ export default class SpaceImpactFactory {
             .globalPos(1, 1)
             .anchor(0, 0)
             .scale(SpaceImpactFactory.globalScale)
+            .withFlag(Flags.FLAG_GAME_OBJECT)
             .withComponent(new LivesComponent())
             .build(container, scene.stage);
     }
 
     createScore(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
         let scene = owner.getScene();
-        let text = new PIXICmp.Text();
+        let text = new PIXICmp.Text(Tags.TAG_SCORE);
         text.style = this.defaultTextStyle()
 
         new PIXIObjectBuilder(scene)
             .relativePos(0.99, 0.01)
             .anchor(1, 0)
             .scale(SpaceImpactFactory.globalScale)
+            .withFlag(Flags.FLAG_GAME_OBJECT)
             .withComponent(new ScoreComponent())
-            .build(new PIXICmp.Text(Tags.TAG_SCORE), scene.stage)
+            .build(text, scene.stage)
     }
 
     createShip(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
@@ -160,6 +164,7 @@ export default class SpaceImpactFactory {
             .relativePos(0.1, 0.5)
             .anchor(0, 0.5)
             .scale(SpaceImpactFactory.globalScale)
+            .withFlag(Flags.FLAG_GAME_OBJECT)
             .withComponent(new ShipArrowInputController())
             .build(new PIXICmp.Sprite(Tags.TAG_SHIP, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_SHIP)), scene.stage);
     }
@@ -184,6 +189,7 @@ export default class SpaceImpactFactory {
             .anchor(0, 0.5)
             .globalPos(shipPosition.x + shipPixi.width, shipPosition.y)
             .withFlag(Flags.FLAG_MISSILE)
+            .withFlag(Flags.FLAG_GAME_OBJECT)
             .withAttribute(Attributes.ATTR_DYNAMICS, dynamics)
             .withComponent(new MissileComponent())
             .build(new PIXICmp.Sprite(Tags.TAG_SHIP_MISSILE, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_MISSILE)), rootObject);
@@ -202,6 +208,7 @@ export default class SpaceImpactFactory {
             .anchor(0, 0.5)
             .globalPos(enemyPosition.x - (sprite.width * SpaceImpactFactory.globalScale), enemyPosition.y)
             .withFlag(Flags.FLAG_SHIP_MISSILE_COLLIDABLE)
+            .withFlag(Flags.FLAG_GAME_OBJECT)
             .withAttribute(Attributes.ATTR_DYNAMICS, dynamics)
             .withComponent(new MissileComponent())
             .build(sprite, rootObject);
@@ -223,15 +230,34 @@ export default class SpaceImpactFactory {
             .anchor(0, 0.5)
             .globalPos(scene.app.screen.width, position)
             .withFlag(Flags.FLAG_SHIP_MISSILE_COLLIDABLE)
+            .withFlag(Flags.FLAG_GAME_OBJECT)
             .withComponent(this.enemyMovement(type))
             .withComponent(this.enemyShooting(type))
             .build(sprite, rootObject);
     }
 
+    createGameOver(owner: PIXICmp.ComponentObject) {
+        let scene = owner.getScene();
+        let text = new PIXICmp.Text(Tags.TAG_GAME_OVER);
+        let style = this.defaultTextStyle()
+        
+        style.fontSize = 45;
+        style.align = "center";
+        text.style = style;
+        text.visible = false;
+
+        new PIXIObjectBuilder(scene)
+            .relativePos(0.5, 0.5)
+            .anchor(0.5, 0.5)
+            .scale(SpaceImpactFactory.globalScale)
+            .withComponent(new GamerOverComponent())
+            .build(text, scene.stage)
+    }
+
     protected defaultTextStyle(): PIXI.TextStyle {
         return new PIXI.TextStyle({
             fontFamily: "Comfont",
-            fill: "0xFFFFFF"
+            fill: "0x000000"
         });
     }
 
@@ -270,44 +296,6 @@ export default class SpaceImpactFactory {
             case EnemyType.Moving: return new EnemySimpleShooting();
         }
     }
-
-    // createParatrooper(owner: PIXICmp.ComponentObject, model: ParatrooperModel) {
-    //     let dynamics = new Dynamics();
-    //     dynamics.aceleration = new Vec2(0, model.gravity);
-
-    //     new PIXIObjectBuilder(owner.getScene())
-    //         .scale(ParatrooperFactory.globalScale)
-    //         .anchor(0.5, 1)
-    //         .withFlag(FLAG_COLLIDABLE)
-    //         .localPos(owner.getPixiObj().position.x, owner.getPixiObj().position.y)
-    //         .withAttribute(ATTR_DYNAMICS, dynamics)
-    //         .withComponent(new ParatrooperComponent())
-    //         .withState(STATE_FALLING)
-    //         .build(new PIXICmp.Sprite(TAG_PARATROOPER, PIXI.Texture.fromImage(TEXTURE_PARATROOPER)), owner.getScene().stage);
-    // }
-
-    // createCopter(owner: PIXICmp.ComponentObject, model: ParatrooperModel) {
-    //     let root = owner.getScene().stage;
-
-    //     // 50% probability that the copter will be spawned on the left side
-    //     let spawnLeft = Math.random() > 0.5;
-    //     let posY = Math.random() * (model.copterSpawnMaxY - model.copterSpawnMinY) + model.copterSpawnMinY;
-    //     let posX = spawnLeft ? -0.2 : 1.2;
-    //     let velocity = (spawnLeft ? 1 : -1) * Math.random() * (model.copterMaxVelocity - model.copterMinVelocity) + model.copterMinVelocity;
-    //     let dynamics = new Dynamics();
-    //     dynamics.velocity = new Vec2(velocity, 0);
-
-    //     new PIXIObjectBuilder(owner.getScene())
-    //         .withFlag(FLAG_COLLIDABLE)
-    //         .withAttribute(ATTR_DYNAMICS, dynamics)
-    //         .withComponent(new CopterComponent())
-    //         .withComponent(new CopterMovement())
-    //         .withComponent(new CopterAnimator())
-    //         .relativePos(posX, posY)
-    //         .anchor(0.5, 0.5)
-    //         .scale(ParatrooperFactory.globalScale)
-    //         .build(new PIXICmp.Sprite(TAG_COPTER, PIXI.Texture.fromImage(TEXTURE_COPTER_LEFT)), root);
-    // }
 
     resetGame(scene: Scene) {
         scene.clearScene();

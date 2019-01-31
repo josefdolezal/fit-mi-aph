@@ -1,6 +1,8 @@
 import SpaceImpactBaseComponent from "./SpaceImpactBaseComponent";
 import { Messages } from "../config/Messages";
 import Msg from "../../../ts/engine/Msg";
+import { Tags } from "../config/Tags";
+import { Flags } from "../config/Flags";
 
 export class GameManager extends SpaceImpactBaseComponent {
     onInit() {
@@ -11,7 +13,10 @@ export class GameManager extends SpaceImpactBaseComponent {
     }
 
     onMessage(msg: Msg) {
-        console.log("test");
+        if(this.model.isGameOver) {
+            return;
+        }
+
         if(msg.action == Messages.MSG_SHIP_KILLED) {
             this.model.lives = Math.max(0, this.model.lives - 1);
             
@@ -25,6 +30,16 @@ export class GameManager extends SpaceImpactBaseComponent {
 
     protected gameOver() {
         this.model.isGameOver = true;
+
+        // Remove all game related objects
+        this.owner.getScene()
+            .findAllObjectsByFlag(Flags.FLAG_GAME_OBJECT)
+            .forEach(o => o.remove());
+        
+        this.owner.getScene()
+            .findFirstObjectByTag(Tags.TAG_GAME_OVER)
+            .getPixiObj()
+            .visible = true;
 
         this.sendMessage(Messages.MSG_GAME_OVER);
 
