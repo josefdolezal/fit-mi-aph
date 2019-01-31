@@ -1,0 +1,110 @@
+= MI-APH -- Space Impact
+Josef Doležal <dolezjo3@fit.cvut.cz>
+:imagesdir: assets
+:xrefstyle: short
+
+== Introduction
+
+The game is heavily inspired by game called **Space Impact** originaly released in 2000 as mobile game by company called Nokia.
+
+The game uses similar game graphics assets and logo (recreated to look as it's displayed in low resolution) to the original game.
+The inspired game also includes sound effects (taken from https://freesound.org[freesound]).
+
+This game only contains subset of the functions of the original game.
+The gameplay and the goal of the are mostly different.
+
+image::preview.png[Game preview]
+
+== Architecture
+
+The app written using Pixi.js game framework using component architecture.
+The graph below illustrates how individual components are connected.
+
+image::architecture.png[Game architecture]
+
+== Game manual
+
+The game is by default set for one player (singleplayer).
+The goal is to clear all levels without getting the ship damaged.
+The player must avoid (or shoot) enemies and thier missiles.
+For each shot enemy or missile the user gets score points.
+
+=== Controls
+
+User may control his ship using following keys:
+
+|===
+|Key |Action
+
+|Arrow Up
+|Moves ship up
+
+|Arrow Down
+|Moves ship down
+
+|Arrow Right
+|Moves ship to the right
+
+|Arrow Left
+|Moves ship to the left
+
+|Spacebar
+|Shoots the missile
+|===
+
+There is also option to add secondary player to the game.
+The game is enaled by the `M` key.
+Controls for secondary user are following:
+
+|===
+|Key |Action
+
+|Key `W`
+|Moves ship up
+
+|Key `S`
+|Moves ship down
+
+|Key `D`
+|Moves ship to the right
+
+|Key `A`
+|Moves ship to the left
+
+|Key `X`
+|Shoots the missile
+|===
+
+Both users share same life points.
+
+== Running game localy
+
+Game sources are located in `src` directory.
+The game is implemented using TypeScript language as a web app.
+To run app localy, follow these steps:
+
+* Clone content of this repository into your local folder
+* Install https://www.npmjs.com[Node Package Manager] and https://yarnpkg.com[yarn]
+* Execute command `yarn install` and `yarn run start`
+* Open `localhost:1234` in your browser
+
+
+== Features
+
+The game has following features:
+
+- Player's ship movement (in all directions)
+- Player's ship shooting
+- Different enemy types (with different movement and shooting)
+- Collision deteciton
+- Single & multi-player (one or two players)
+- Game levels
+- Spawning enemies using "wave" pattern
+- Levels information, game end information
+- Configuration and level creation using external file (`static/config.json`)
+- Score points (differs by hit target)
+- Player lives
+- Automatic restart after game end
+- Sound effects
+- Component architecture, messaging communication
+- Game introduction
