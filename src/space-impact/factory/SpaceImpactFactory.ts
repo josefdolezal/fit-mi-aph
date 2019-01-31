@@ -28,6 +28,7 @@ import { LivesComponent } from '../component/LivesComponent';
 import { ScoreComponent } from '../component/ScoreComponent';
 import { GameManager} from '../component/GameManager';
 import { GamerOverComponent } from '../component/GameOverComponent';
+import { IntroComponent } from '../component/IntroComponent';
 
 export default class SpaceImpactFactory {
 
@@ -41,20 +42,6 @@ export default class SpaceImpactFactory {
         let scene = rootObject.getScene();
         let builder = new PIXIObjectBuilder(scene);
 
-        // ============================================================================================================
-        // special component that will wait for a death of a unit, executes a DeathAnimation
-        // upon it and removes it from the scene
-        // let deathChecker = new GenericComponent("DeathChecker") // anonymous generic component
-        //     .doOnMessage(MSG_UNIT_KILLED, (cmp, msg) => {    // wait for message MSG_UNIT_KILLED
-        //         let contextObj = msg.data as PIXICmp.ComponentObject; // take the killed object from message payload
-        //         contextObj.addComponent(new ChainingComponent() // add chaining component that will execute two closure
-        //             .addComponentAndWait(new DeathAnimation()) // firstly, add directly DeathAnimation to the object and wait until it finishes
-        //             .execute((cmp) => contextObj.remove())); // secondly, remove the object from the scene
-        //     });
-        // ============================================================================================================
-
-
-        // add root components
         builder
             .withComponent(new KeyInputComponent())
             .withComponent(new GameManager())
@@ -63,71 +50,30 @@ export default class SpaceImpactFactory {
             .withComponent(new CollisionManager())
             .withComponent(new CollisionResolver())
         //     // .withComponent(deathChecker)
-        //     //.withComponent(new DebugComponent(document.getElementById("debugSect")))
+
             .build(rootObject);
 
         this.createGround(rootObject);
+        this.createIntro(rootObject, model);   
+    }
+
+    startGame(rootObject: PIXICmp.ComponentObject, model: SpaceImpactModel) {
         this.createGameOver(rootObject);
         this.createLives(rootObject, model);
         this.createScore(rootObject, model);
         this.createShip(rootObject, model);
         this.createSimpleEnemy(rootObject, model);
-
-        // create labels
-        // score
-        // let score = new PIXICmp.Text(TAG_SCORE);
-        // score.style = new PIXI.TextStyle({
-        //     fill: "0xFFFFFF"
-        // })
-        // builder.relativePos(1.0, 1.01).scale(ParatrooperFactory.globalScale).anchor(1, 1)
-        //     .withComponent(new GenericComponent("ScoreComponent").doOnUpdate((cmp, delta, absolute) => {
-        //         let score = "SCORE: " + model.score.toFixed(2);
-        //         let text = <PIXI.Text>cmp.owner.getPixiObj();
-        //         text.text = score;
-        //     }))
-        //     .build(score, rootObject);
-
-        // // game over label
-        // let text = "GAME OVER";
-        // let gameOver = new PIXICmp.Text(TAG_GAMEOVER, text);
-        // gameOver.style = new PIXI.TextStyle({
-        //     fill: "0xFFFFFF"
-        // })
-        // gameOver.visible = false;
-        // builder.relativePos(0.5, 0.5).scale(ParatrooperFactory.globalScale).anchor(0.5, 0.5).build(gameOver, rootObject);
-
-        // // number of lives
-        // let lives = new PIXICmp.Text(TAG_LIVES);
-        // lives.style = new PIXI.TextStyle({
-        //     fill: "0xFFFFFF"
-        // })
-        // builder.relativePos(0, 1.01).scale(ParatrooperFactory.globalScale).anchor(0, 1)
-        //     .withComponent(new GenericComponent("LivesComponent").doOnUpdate((cmp, delta, absolute) => {
-        //         let lives = "LIVES: " + Math.max(0, model.maxLandedUnits - model.landedUnits);
-        //         let text = <PIXI.Text>cmp.owner.getPixiObj();
-        //         text.text = lives;
-        //     }))
-        //     .build(lives, rootObject);
     }
 
-    addIntro(scene: Scene, model: SpaceImpactModel) {
-        let builder = new PIXIObjectBuilder(scene);
+    createIntro(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
+        let scene = owner.getScene();
 
-        // stage components
-        builder
-        // .withComponent(new SoundComponent())
-        // .withComponent(new IntroComponent())
-        .build(scene.stage)
-
-        // // title
-        // builder
-        // .relativePos(0.5, 0.25)
-        // .anchor(0.5)
-        // // .scale(Factory.globalScale)
-        // .build(new PIXICmp.Sprite(TAG_TITLE, this.createTexture(model.getSpriteInfo(TAG_TITLE))), scene.stage);
-
-        // ship
-       
+        new PIXIObjectBuilder(scene)
+            .relativePos(0.5, 0.5)
+            .anchor(0.5, 0.5)
+            .scale(SpaceImpactFactory.globalScale)
+            .withComponent(new IntroComponent())
+            .build(new PIXICmp.Sprite(Tags.TAG_INTRO, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_INTRO)), scene.stage);
     }
 
     createLives(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {

@@ -38,6 +38,7 @@ class SpaceImpact {
             .add(Resources.TEXTURE_TAG_SIMPLE_ENEMY, 'static/simple_enemy.png')
             .add(Resources.TEXTURE_TAG_MOVING_ENEMY, 'static/moving_enemy.png')
             .add(Resources.TEXTURE_TAG_SHOOTING_ENEMY, 'static/shooting_enemy.png')
+            .add(Resources.TEXTURE_TAG_INTRO, 'static/intro.png')
             .add(Resources.TEXTURE_TAG_LIVE, 'static/live.png')
             .add(Resources.SOUND_SHIP_SHOT, 'static/shot.mp3')
             .add(Resources.SOUND_ENEMY_SHOT, 'static/shot.mp3')

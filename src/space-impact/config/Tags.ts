@@ -13,4 +13,6 @@ export class Tags {
     static readonly TAG_SCORE = "score";
     static readonly TAG_GAME_OVER = "gamme-over";
     static readonly TAG_GAME_WON = "game-won";
+
+    static readonly TAG_INTRO = "TAG_INTRO";
 }
