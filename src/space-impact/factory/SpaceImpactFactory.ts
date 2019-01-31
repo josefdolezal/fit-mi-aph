@@ -10,7 +10,7 @@ import { GenericComponent } from '../../../ts/components/GenericComponent';
 import Dynamics from '../../../ts/utils/Dynamics';
 import ChainingComponent from '../../../ts/components/ChainingComponent';
 
-import { ShipArrowInputController } from "../component/ShipController";
+import { ShipArrowInputController, ShipKeysInputController } from "../component/ShipController";
 
 import { Attributes } from '../config/Attributes';
 import { Resources } from '../config/Resources';
@@ -30,6 +30,7 @@ import { GameManager} from '../component/GameManager';
 import { GamerOverComponent } from '../component/GameOverComponent';
 import { IntroComponent } from '../component/IntroComponent';
 import { EnemySpawner } from '../component/EnemySpawner';
+import { MultiplayerComponent } from '../component/MultiplayerComponent';
 
 export default class SpaceImpactFactory {
 
@@ -64,9 +65,14 @@ export default class SpaceImpactFactory {
         this.createGameOver(rootObject);
         this.createLives(rootObject, model);
         this.createScore(rootObject, model);
-        this.createShip(rootObject, model);
+        this.createShip(false, rootObject, model);
+
+        if(model.multiplayerEnabled) {
+            this.createShip(true, rootObject, model);
+        }
 
         rootObject.addComponent(new EnemySpawner());
+        rootObject.addComponent(new MultiplayerComponent());
     }
 
     createIntro(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
@@ -107,16 +113,22 @@ export default class SpaceImpactFactory {
             .build(text, scene.stage)
     }
 
-    createShip(owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
+    createShip(isSecondPlayer: boolean, owner: PIXICmp.ComponentObject, model: SpaceImpactModel) {
         let scene = owner.getScene();
+        let sprite = new PIXICmp.Sprite(Tags.TAG_SHIP, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_SHIP));
+        let controller = isSecondPlayer ? new ShipKeysInputController() : new ShipArrowInputController();
+
+        if(isSecondPlayer) {
+            sprite.setFlag(Flags.FLAG_SECOND_PLAYER);
+        }
 
         new PIXIObjectBuilder(scene)
             .relativePos(0.1, 0.5)
             .anchor(0, 0.5)
             .scale(SpaceImpactFactory.globalScale)
             .withFlag(Flags.FLAG_GAME_OBJECT)
-            .withComponent(new ShipArrowInputController())
-            .build(new PIXICmp.Sprite(Tags.TAG_SHIP, PIXI.Texture.fromImage(Resources.TEXTURE_TAG_SHIP)), scene.stage);
+            .withComponent(controller)
+            .build(sprite, scene.stage);
     }
 
     createGround(owner: PIXICmp.ComponentObject) {

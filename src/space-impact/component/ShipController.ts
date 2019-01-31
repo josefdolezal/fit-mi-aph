@@ -1,4 +1,4 @@
-import { KeyInputComponent, KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN, KEY_SPACE,  } from '../../../ts/components/KeyInputComponent';
+import { KeyInputComponent, KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN, KEY_SPACE, KEY_A, KEY_W, KEY_S, KEY_X, KEY_D } from '../../../ts/components/KeyInputComponent';
 import { Attributes } from '../config/Attributes';
 import { Messages } from '../config/Messages';
 import SpaceImpactBaseComponent from './SpaceImpactBaseComponent';
@@ -67,24 +67,51 @@ export class ShipController extends SpaceImpactBaseComponent {
     }
 }
 
-/**
- * Cannon controller for the keyboard
- */
-export class ShipArrowInputController extends ShipController {
+class ShipKeyboardController extends ShipController {
+    private left: number;
+    private right: number;
+    private up: number;
+    private down: number;
+    private shoot: number;
+
+    constructor(left: number, right: number, up: number, down: number, shoot: number) {
+        super();
+        this.left = left;
+        this.right = right;
+        this.up = up;
+        this.down = down;
+        this.shoot = shoot;
+    }
+
     onUpdate(delta: number, absolute: number) {
         let cmp = this.scene.stage.findComponentByClass(KeyInputComponent.name);
         let cmpKey = <KeyInputComponent><any>cmp;
 
-        if (cmpKey.isKeyPressed(KEY_LEFT))
+        if (cmpKey.isKeyPressed(this.left))
             this.move(Direction.Left, delta);
-        else if (cmpKey.isKeyPressed(KEY_RIGHT))
+        else if (cmpKey.isKeyPressed(this.right))
             this.move(Direction.Right, delta);
-        else if (cmpKey.isKeyPressed(KEY_UP))
+        else if (cmpKey.isKeyPressed(this.up))
             this.move(Direction.Up, delta);
-        else if (cmpKey.isKeyPressed(KEY_DOWN))
+        else if (cmpKey.isKeyPressed(this.down))
             this.move(Direction.Down, delta);
 
-        if(cmpKey.isKeyPressed(KEY_SPACE))
+        if(cmpKey.isKeyPressed(this.shoot))
             this.tryFire(absolute)
+    }
+}
+
+/**
+ * Cannon controller for the keyboard
+ */
+export class ShipArrowInputController extends ShipKeyboardController {
+    constructor() {
+        super(KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN, KEY_SPACE);
+    }
+}
+
+export class ShipKeysInputController extends ShipKeyboardController {
+    constructor() {
+        super(KEY_A, KEY_D, KEY_W, KEY_S, KEY_X);
     }
 }

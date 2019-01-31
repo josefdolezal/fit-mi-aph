@@ -13,6 +13,9 @@ export class Messages {
     static readonly MSG_LEVEL_CLEARED = "MSG_LEVEL_CLEARED";
     static readonly MSG_GAME_WON = "MSG_GAME_WON";
 
+    static readonly MSG_SECOND_PLAYER_JOINED = "MSG_SECOND_PLAYER_JOINED";
+    static readonly MSG_SECOND_PLATER_LEFT = "MSG_SECOND_PLAYER_LEFT";
+
     static readonly MSG_OBJECT_ADDED = MSG_OBJECT_ADDED;
     static readonly MSG_OBJECT_REMOVED = MSG_OBJECT_REMOVED;
 }

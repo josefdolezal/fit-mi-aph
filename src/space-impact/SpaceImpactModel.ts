@@ -52,6 +52,7 @@ export class SpaceImpactModel {
     enemyShootingRate = 1000;
     movingEnemyRange = 10;
     afterWaveSpareTime = 1500;
+    multiplayerEnabled = false;
 
     constructor() {
         this.reset();
@@ -113,5 +114,6 @@ export class SpaceImpactModel {
         this.enemiesLeft = 0;
         this.enemiesToSpawn = 0;
         this.enemiesLeft = 0;
+        this.multiplayerEnabled = false;
     }
 }
