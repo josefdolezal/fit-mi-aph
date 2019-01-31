@@ -49,31 +49,39 @@ export class CollisionManager extends SpaceImpactBaseComponent {
 
         // O(m^n), we don't suppose there will be more than 50 units in total
         for (let missile of this.shipMissiles) {
-            for (let collidable of this.shipMissileCollidables) {
-                let boundsA = missile.getPixiObj().getBounds();
-                let boundsB = collidable.getPixiObj().getBounds();
+            if(missile.getState() != States.STATE_DEAD) {
+                for (let collidable of this.shipMissileCollidables) {
+                    if(collidable.getState() != States.STATE_DEAD) {
+                        let boundsA = missile.getPixiObj().getBounds();
+                        let boundsB = collidable.getPixiObj().getBounds();
 
-                let intersectionX = this.testHorizIntersection(boundsA, boundsB);
-                let intersectionY = this.testVertIntersection(boundsA, boundsB);
+                        let intersectionX = this.testHorizIntersection(boundsA, boundsB);
+                        let intersectionY = this.testVertIntersection(boundsA, boundsB);
 
-                if (intersectionX > 0 && intersectionY > 0) {
-                    // we have a collision
-                    collides.push(new CollisionInfo(collidable, missile));
+                        if (intersectionX > 0 && intersectionY > 0) {
+                            // we have a collision
+                            collides.push(new CollisionInfo(collidable, missile));
+                        }
+                    }
                 }
             }
         }
 
         for(let ship of this.ships) {
-            for(let collidable of this.shipMissileCollidables) {
-                let boundsA = ship.getPixiObj().getBounds();
-                let boundsB = collidable.getPixiObj().getBounds();
+            if(ship.getState() != States.STATE_DEAD) {
+                for(let collidable of this.shipMissileCollidables) {
+                    if(collidable.getState() != States.STATE_DEAD) {
+                        let boundsA = ship.getPixiObj().getBounds();
+                        let boundsB = collidable.getPixiObj().getBounds();
 
-                let intersectionX = this.testHorizIntersection(boundsA, boundsB);
-                let intersectionY = this.testVertIntersection(boundsA, boundsB);
+                        let intersectionX = this.testHorizIntersection(boundsA, boundsB);
+                        let intersectionY = this.testVertIntersection(boundsA, boundsB);
 
-                if (intersectionX > 0 && intersectionY > 0) {
-                    // we have a collision
-                    collides.push(new CollisionInfo(ship, collidable));
+                        if (intersectionX > 0 && intersectionY > 0) {
+                            // we have a collision
+                            collides.push(new CollisionInfo(ship, collidable));
+                        }
+                    }
                 }
             }
         }

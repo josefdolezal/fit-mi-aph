@@ -6,6 +6,7 @@ import { Flags } from '../config/Flags';
 import { CollisionInfo } from './CollisionManager';
 import SpaceImpactBaseComponent from "./SpaceImpactBaseComponent";
 import { Tags } from '../config/Tags';
+import { PIXICmp } from '../../../ts/engine/PIXIObject';
 
 /**
  * Collision resolver component
@@ -33,34 +34,42 @@ export class CollisionResolver extends SpaceImpactBaseComponent {
 
         // Ship missile shot enemy
         if(collision.trigger.getTag() == Tags.TAG_SHIP_MISSILE) {
-            collision.collidable.setState(States.STATE_DEAD);
-
             if(collision.collidable.getTag() == Tags.TAG_ENEMY_MISSILE) {
                 // The enemy missile shot
                 this.model.score += 5;
-                collision.collidable.remove();
+                this.safeRemove(collision.collidable);
             } else if (collision.collidable.getTag() == Tags.TAG_ENEMY) {
                 // Ship missile shot enemy
                 this.model.score += 20;
-                collision.collidable.remove();
+                this.safeRemove(collision.collidable);
                 this.sendMessage(Messages.MSG_ENEMY_KILLED, collision.collidable);
             }
             
             // Remove missile
-            collision.trigger.remove();
+            collision.collidable.setState(States.STATE_DEAD);
+            collision.trigger.setState(States.STATE_DEAD);
+            this.safeRemove(collision.trigger);
         }
         // Enemy shot ship
         else if(collision.trigger.hasFlag(Flags.FLAG_SHIP_MISSILE_COLLIDABLE)) {
             if(collision.collidable.getTag() == Tags.TAG_SHIP) {
                 if(collision.trigger.getTag() == Tags.TAG_ENEMY_MISSILE) {
-                    collision.trigger.remove();
+                    this.safeRemove(collision.trigger);
                 } else if(collision.trigger.getTag() == Tags.TAG_ENEMY) {
-                    collision.trigger.remove();
+                    this.safeRemove(collision.trigger);
                     this.sendMessage(Messages.MSG_ENEMY_KILLED);
                 }
 
+                collision.trigger.setState(States.STATE_DEAD);
+
                 this.sendMessage(Messages.MSG_SHIP_KILLED, collision.collidable);
             }
+        }
+    }
+
+    protected safeRemove(object: PIXICmp.ComponentObject) {
+        if(object.getPixiObj().parent != null) {
+            object.remove();
         }
     }
 }
